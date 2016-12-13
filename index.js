@@ -39,15 +39,30 @@ app.post('/webhook/', function (req, res) {
       let text = event.message.text
       // Filter text
       text = text.toLowerCase()
-      if (text == "hey" || text == "hello") {
+      if (text == "hi" || text == "hey" || text == "hello") {
         sendTextMessage(sender, "Please give me a TV show!")
       } else {
         omdb.search({
           search: text, 
           type: 'series'
         }).then(function (res) {
-          console.log(res[0].title);
-          sendTextMessage(sender, res[0].title)
+          omdb.get({
+            id: res[0].imdbid
+          }).then(function (res) {
+            omdb.get({
+              id: res.imdbid,
+              season: res.totalseasons
+            }).then(function (res) {
+              let episodes_count = Object.keys(res.episodes).length
+                for (let i=0; i<episodes_count; i++) {
+                  if (res.episodes[i].title.includes("Episode") && res.episodes[i].released.substring(0, 4).includes("2017")) {
+                    // console.log(res.episodes[i-1].title)
+                    sendTextMessage(sender, res.episodes[i-1].title)
+                    break
+                  }
+                }
+              }).catch(console.error.bind(console));
+          }).catch(console.error.bind(console));
         }).catch(console.error.bind(console));
       }
     }
