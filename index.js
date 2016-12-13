@@ -4,7 +4,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
-var omdb = require('omdbapi');
+const omdb = require('omdbapi')
 
 app.set('port', (process.env.PORT || 5000))
 
