@@ -41,7 +41,7 @@ app.post('/webhook/', function (req, res) {
           search: text, 
           type: 'series'
         }).then(function (res) {
-          console.log(res[0].title);
+          console.log(res[0].title.substring(0, 200));
           sendTextMessage(sender, res)
         }).catch(console.error.bind(console));
       }
