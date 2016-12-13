@@ -4,6 +4,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
+var omdb = require('omdbapi');
 
 app.set('port', (process.env.PORT || 5000))
 
@@ -15,7 +16,7 @@ app.use(bodyParser.json())
 
 // Index route
 app.get('/', function (req, res) {
-  res.send('Hello botworld!')
+  res.send('Hello, botworld!')
 })
 
 // Facebook verification
@@ -36,7 +37,12 @@ app.post('/webhook/', function (req, res) {
       if (text == "hey" || text == "hello") {
         sendTextMessage(sender, "Please give me a TV show!")
       } else {
-        sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200))
+        omdb.search({
+          search: 'game of thrones'
+        }).then(function (res) {
+          console.log('got response:', res);
+          sendTextMessage(sender, res)
+        }).catch(console.error.bind(console));
       }
     }
   }
