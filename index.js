@@ -57,7 +57,7 @@ app.post('/webhook/', function (req, res) {
                 for (let i=0; i<episodes_count; i++) {
                   if (res.episodes[i].title.includes("Episode") && res.episodes[i].released.substring(0, 4).includes("2017")) {
                     // console.log(res.episodes[i-1].title)
-                    sendTextMessage(sender, res.episodes[i-1].title)
+                    sendTextMessage(sender, "Last episode: \"" + res.episodes[i-1].title + "\" on: " + res.episodes[i-1].released)
                     break
                   }
                 }
