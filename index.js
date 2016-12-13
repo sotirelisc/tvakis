@@ -41,8 +41,8 @@ app.post('/webhook/', function (req, res) {
           search: text, 
           type: 'series'
         }).then(function (res) {
-          console.log(JSON.stringify(res[0].title));
-          sendTextMessage(sender, res)
+          console.log(res[0].title);
+          sendTextMessage(sender, res[0].title)
         }).catch(console.error.bind(console));
       }
     }
