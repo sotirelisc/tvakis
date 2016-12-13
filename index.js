@@ -40,7 +40,7 @@ app.post('/webhook/', function (req, res) {
         omdb.search({
           search: 'game of thrones'
         }).then(function (res) {
-          console.log('got response:', res);
+          console.log(res.first.title);
           sendTextMessage(sender, res)
         }).catch(console.error.bind(console));
       }
