@@ -38,9 +38,10 @@ app.post('/webhook/', function (req, res) {
         sendTextMessage(sender, "Please give me a TV show!")
       } else {
         omdb.search({
-          search: 'game of thrones'
+          search: text, 
+          type: 'series'
         }).then(function (res) {
-          console.log(res.first.title);
+          console.log(res[0].title);
           sendTextMessage(sender, res)
         }).catch(console.error.bind(console));
       }
