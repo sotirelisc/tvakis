@@ -29,11 +29,16 @@ app.get('/webhook/', function (req, res) {
 
 app.post('/webhook/', function (req, res) {
   let messaging_events = req.body.entry[0].messaging
+  // Loop through messaging events
   for (let i = 0; i < messaging_events.length; i++) {
     let event = req.body.entry[0].messaging[i]
+    // Get sender (user) info
     let sender = event.sender.id
     if (event.message && event.message.text) {
+      // Parse actual text
       let text = event.message.text
+      // Filter text
+      text = text.toLowerCase()
       if (text == "hey" || text == "hello") {
         sendTextMessage(sender, "Please give me a TV show!")
       } else {
