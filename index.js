@@ -4,7 +4,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
-const omdb = require('omdbapi')
+const imdb = require('imdb-api')
 
 app.set('port', (process.env.PORT || 5000))
 
@@ -42,33 +42,42 @@ app.post('/webhook/', function (req, res) {
       if (text == "hi" || text == "hey" || text == "hello") {
         sendTextMessage(sender, "Please give me a TV show!")
       } else {
-        omdb.search({
-          search: text, 
-          type: 'series'
-        }).then(function (res) {
-          omdb.get({
-            id: res[0].imdbid
-          }).then(function (res) {
-            omdb.get({
-              id: res.imdbid,
-              season: res.totalseasons
-            }).then(function (res) {
-              let episodes_count = Object.keys(res.episodes).length
-                for (let i=0; i<episodes_count; i++) {
-                  if (res.episodes[i].title.includes("Episode") && res.episodes[i].released.substring(0, 4).includes("2017")) {
-                    // console.log(res.episodes[i-1].title)
-                    sendTextMessage(sender, "Last episode: \"" + res.episodes[i-1].title + "\" on: " + res.episodes[i-1].released)
-                    break
+        imdb.getReq({ name: text }, (err, tvshow) => {
+          if (!err) {
+            sendTextMessage(sender, tvshow.title)
+            // Find and show the correct last episode
+            imdb.getReq({ name: tvshow.title }, (err, data) => {
+              if (!err) {
+                data.episodes((err, episodes) => { 
+                  if (!err) {
+                    let correct = getCorrectEpisode(episodes)
+                    sendTextMessage(sender, "Last episode aired was \"" + correct.title + "\" on " + correct.released.toDateString() + ".")
                   }
-                }
-              }).catch(console.error.bind(console));
-          }).catch(console.error.bind(console));
-        }).catch(console.error.bind(console));
+                });
+              }
+            });
+          }
+        })
       }
     }
   }
   res.sendStatus(200)
 })
+
+function getCorrectEpisode(episodes) {
+  let i = episodes.length - 1
+  let episode = episodes[i]
+  let ep_date = episode.released
+
+  var today = new Date()
+            
+  while (ep_date > today) {
+    episode = episodes[i]
+    ep_date = episode.released
+    i--
+  }
+  return episode
+}
 
 const token = process.env.FB_PAGE_ACCESS_TOKEN
 
