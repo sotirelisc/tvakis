@@ -64,8 +64,12 @@ function getLastEpisode(tvshow) {
         if (!err) {
           let correct = getCorrectEpisode(episodes)
           return correct
+        } else {
+          console.log(err)
         }
       });
+    } else {
+      console.log(err)
     }
   });
 }
