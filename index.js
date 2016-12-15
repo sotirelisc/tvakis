@@ -47,6 +47,20 @@ app.post('/webhook/', function (req, res) {
           if (!err) {
             sendTextMessage(sender, tvshow.title)
             // Find and show the correct last episode
+            imdb.getReq({ name: tvshow.title }, (err, data) => {
+              if (!err) {
+                data.episodes((err, episodes) => { 
+                  if (!err) {
+                    let correct = getCorrectEpisode(episodes)
+                    sendTextMessage(sender, "Last episode aired was \"" + correct.name + "\" on " + correct.released.toDateString() + ".")
+                  } else {
+                    console.log(err)
+                  }
+                });
+              } else {
+                console.log(err)
+              }
+            });
             let last_episode = getLastEpisode(tvshow)
             sendTextMessage(sender, "Last episode aired was \"" + last_episode.name + "\" on " + last_episode.released.toDateString() + ".")
           }
