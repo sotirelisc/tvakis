@@ -61,7 +61,7 @@ app.post('/webhook/', function (req, res) {
                 console.log(err)
               }
             });
-            let last_episode = getLastEpisode(tvshow)
+            let last_episode = getLastEpisode(tvshow.title)
             sendTextMessage(sender, "Last episode aired was \"" + last_episode.name + "\" on " + last_episode.released.toDateString() + ".")
           }
         })
@@ -72,7 +72,7 @@ app.post('/webhook/', function (req, res) {
 })
 
 function getLastEpisode(tvshow) {
-  imdb.getReq({ name: tvshow.title }, (err, data) => {
+  imdb.getReq({ name: tvshow }, (err, data) => {
     if (!err) {
       data.episodes((err, episodes) => { 
         if (!err) {
