@@ -72,7 +72,7 @@ function getCorrectEpisode(episodes) {
 
   var today = new Date()
             
-  while (ep_date > today) {
+  while (ep_date > today || ep_date == "Invalid Date") {
     episode = episodes[i]
     ep_date = episode.released
     i--
