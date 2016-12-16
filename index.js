@@ -43,32 +43,37 @@ app.post('/webhook/', function (req, res) {
         sendTextMessage(sender, "Please give me a TV show!")
       } else {
         sendTextMessage(sender, "Please hold on while I'm collecting data..")
-        imdb.getReq({ name: text }, (err, tvshow) => {
-          if (!err) {
-            sendTextMessage(sender, tvshow.title + " (" + tvshow.rating + " on IMDB)")
-            sendTextMessage(sender, tvshow.plot.substring(0, 200) + "...")
-            // Find and show the correct last episode
-            imdb.getReq({ name: tvshow.title }, (err, data) => {
-              if (!err) {
-                data.episodes((err, episodes) => { 
-                  if (!err) {
-                    let correct = getCorrectEpisode(episodes)
-                    sendTextMessage(sender, "Last episode aired was \"" + correct.name + "\" on " + correct.released.toDateString() + ".")
-                  } else {
-                    console.log(err)
-                  }
-                });
-              } else {
-                console.log(err)
-              }
-            });
-          }
+        getShow(text, function (tvshow) {
+          sendTextMessage(sender, tvshow.title + " (" + tvshow.rating + " on IMDB)")
+          sendTextMessage(sender, tvshow.plot.substring(0, 200) + "...")
+          // Find and show the correct last episode
+          imdb.getReq({ name: tvshow.title }, (err, data) => {
+            if (!err) {
+              data.episodes((err, episodes) => { 
+                if (!err) {
+                  let correct = getCorrectEpisode(episodes)
+                  sendTextMessage(sender, "Last episode aired was \"" + correct.name + "\" on " + correct.released.toDateString() + ".")
+                } else {
+                  console.log(err)
+                }
+              });
+            } else {
+              console.log(err)
+            }
+          });
         })
       }
     }
   }
   res.sendStatus(200)
 })
+
+// Get TV show based on title
+function getShow(title, cb) {
+  imdb.getReq({ name: title }, (err, tvshow) => {
+    if (!err) cb(tvshow)
+  })
+}
 
 function getLastEpisode(tvshow) {
   imdb.getReq({ name: tvshow }, (err, data) => {
