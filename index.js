@@ -45,7 +45,8 @@ app.post('/webhook/', function (req, res) {
         sendTextMessage(sender, "Please hold on while I'm collecting data..")
         getShow(text, function (tvshow) {
           sendTextMessage(sender, tvshow.title + " (" + tvshow.rating + " on IMDB)")
-          sendTextMessage(sender, tvshow.plot.substring(0, 200) + "...")
+          sendTextMessage(sender, tvshow.plot.substring(0, 250) + "...")
+          sendTextMessage(sender, "View on IMDB: http://www.imdb.com/title/" + tvshow.imdbid)
           // Find and show the correct last episode
           imdb.getReq({ name: tvshow.title }, (err, data) => {
             if (!err) {
@@ -98,7 +99,9 @@ function getCorrectEpisode(episodes) {
   let ep_date = episode.released
 
   var today = new Date()
-            
+  
+  // We do not want the last episode to be later than to day
+  // or to have invalid date
   while (ep_date > today || ep_date == "Invalid Date") {
     episode = episodes[i]
     ep_date = episode.released
@@ -109,6 +112,7 @@ function getCorrectEpisode(episodes) {
 
 const token = process.env.FB_PAGE_ACCESS_TOKEN
 
+// Handles messaging from server to bot
 function sendTextMessage(sender, text) {
   let messageData = { text:text }
   request({
