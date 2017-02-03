@@ -62,12 +62,12 @@ app.post('/webhook/', function (req, res) {
         sendTextMessage(sender, "Please give me a TV show or a movie!" + sun)
       } else {
         getShow(text, function (tvshow) {
-          if (tvshow === null) {
+          if (tvshow === "not_found") {
             console.log(tvshow)
           }
-          sendTextMessage(sender, title_emj + tvshow.title + " (" + tvshow.rating + " on IMDB)")
-          sendTextMessage(sender, plot_emj + tvshow.plot.substring(0, 300) + "..")
-          sendTextMessage(sender, view_emj + "View on IMDB: http://www.imdb.com/title/" + tvshow.imdbid)
+          sendTextMessage(sender, title_emj + " " + tvshow.title + " (" + tvshow.rating + " on IMDB)")
+          sendTextMessage(sender, plot_emj + " " + tvshow.plot.substring(0, 300) + "..")
+          sendTextMessage(sender, view_emj + " http://www.imdb.com/title/" + tvshow.imdbid)
           // Find and show the correct last episode
           imdb.getReq({ name: tvshow.title }, (err, data) => {
             if (!err) {
@@ -92,7 +92,7 @@ app.post('/webhook/', function (req, res) {
 function getShow(title, cb) {
   imdb.getReq({ name: title }, (err, tvshow) => {
     if (!err) cb(tvshow)
-    else cb(null)
+    else cb("not_found")
   })
 }
 
