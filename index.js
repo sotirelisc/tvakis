@@ -61,9 +61,10 @@ app.post('/webhook/', function (req, res) {
       if (text == "hi" || text == "hey" || text == "hello") {
         sendTextMessage(sender, "Please give me a TV show or a movie!" + sun)
       } else {
-        getShow(text, function (tvshow) {
-          if (tvshow === "not_found") {
-            console.log(tvshow)
+        imdb.getReq({ name: text }, (err, tvshow) => {
+          if (err) {
+            console.log(err)
+            return
           }
           sendTextMessage(sender, title_emj + " " + tvshow.title + " (" + tvshow.rating + " on IMDB)")
           sendTextMessage(sender, plot_emj + " " + tvshow.plot.substring(0, 300) + "..")
