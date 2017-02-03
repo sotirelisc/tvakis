@@ -27,6 +27,7 @@ app.get('/webhook/', function (req, res) {
   res.send('Error, wrong token')
 })
 
+// Define emojis
 const emojis = {
   not_found: '🙄',
   heart: '❤️',
@@ -34,7 +35,7 @@ const emojis = {
   title_emj: '📺',
   plot_emj: '🎥',
   view_emj: '👉',
-  aired_emj: '✈️️'
+  aired_emj: '✈️ '
 }
 
 app.post('/webhook/', function (req, res) {
