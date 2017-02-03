@@ -40,9 +40,13 @@ app.post('/webhook/', function (req, res) {
       // Filter text
       text = text.toLowerCase()
       if (text == "hi" || text == "hey" || text == "hello") {
-        sendTextMessage(sender, "Please give me a TV show or a movie! <3")
+        sendTextMessage(sender, "Please give me a TV show or a movie!<3")
       } else {
         getShow(text, function (tvshow) {
+          if (tvshow === null) {
+            sendTextMessage(sender, "TV show or movie was not found!:/")
+            return
+          }
           sendTextMessage(sender, tvshow.title + " (" + tvshow.rating + " on IMDB)")
           sendTextMessage(sender, tvshow.plot.substring(0, 250) + "...")
           sendTextMessage(sender, "View on IMDB: http://www.imdb.com/title/" + tvshow.imdbid)
@@ -57,8 +61,6 @@ app.post('/webhook/', function (req, res) {
                   console.log(err)
                 }
               });
-            } else {
-              sendTextMessage(sender, "TV show or movie was not found! :/")
             }
           });
         })
@@ -72,6 +74,7 @@ app.post('/webhook/', function (req, res) {
 function getShow(title, cb) {
   imdb.getReq({ name: title }, (err, tvshow) => {
     if (!err) cb(tvshow)
+    else cb(null)
   })
 }
 
