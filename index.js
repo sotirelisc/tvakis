@@ -133,10 +133,10 @@ function sendTextMessage(sender, text) {
   let messageData = { text:text }
   request({
     url: 'https://graph.facebook.com/v2.6/me/messages',
-    qs: {access_token:token},
+    qs: { access_token: token },
     method: 'POST',
     json: {
-      recipient: {id:sender},
+      recipient: { id: sender },
       message: messageData,
     }
   }, function(error, response, body) {
@@ -148,7 +148,33 @@ function sendTextMessage(sender, text) {
   })
 }
 
+function createGreetingMsgConnector(data) {
+  request({
+    uri: 'https://graph.facebook.com/v2.6/me/thread_settings',
+    qs: { access_token: token },
+    method: 'POST',
+    json: data
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log("Greeting message set successfully!");
+    } else {
+      console.error("Failed to set greeting message!");
+    }
+  });
+}
+
+function setGreetingMsg() {
+  var greetingMsgData = {
+    setting_type: "greeting",
+    greeting: {
+      text:"Hi {{user_first_name}}, I'm TVakis! :D Give me the name of a TV show or movie and I'll search it for you!"
+    }
+  };
+  createGreetingMsgConnector(greetingMsgData);
+}
+
 // Run server
 app.listen(app.get('port'), function() {
   console.log('Running on port: ', app.get('port'))
+  setGreetingMsg()
 })
