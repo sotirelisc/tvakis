@@ -19,6 +19,11 @@ app.get('/', function (req, res) {
   res.send('Hello, botworld!')
 })
 
+// Privacy policy page
+app.get('/privacy/', function (req, res) {
+  res.send('Privacy policy placeholder')
+})
+
 // Facebook verification
 app.get('/webhook/', function (req, res) {
   if (req.query['hub.verify_token'] === 'tvakis_verification') {
