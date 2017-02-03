@@ -27,13 +27,20 @@ app.get('/webhook/', function (req, res) {
   res.send('Error, wrong token')
 })
 
-const emoji = {
+const emojis = {
   not_found: '🙄',
   heart: '❤️',
-  sun: '😎'
+  sun: '😎',
+  title_emj: '📺',
+  plot_emj: '🎥',
+  view_emj: '👉',
+  aired_emj: '✈️️'
 }
 
 app.post('/webhook/', function (req, res) {
+  // Destructuring
+  const { title_emj, plot_emj, view_emj, aired_emj, sun, not_found } = emojis;
+  
   let messaging_events = req.body.entry[0].messaging
   // Loop through messaging events
   for (let i = 0; i < messaging_events.length; i++) {
@@ -46,23 +53,23 @@ app.post('/webhook/', function (req, res) {
       // Filter text
       text = text.toLowerCase()
       if (text == "hi" || text == "hey" || text == "hello") {
-        sendTextMessage(sender, "Please give me a TV show or a movie!" + emoji.sun)
+        sendTextMessage(sender, "Please give me a TV show or a movie!" + sun)
       } else {
         getShow(text, function (tvshow) {
           if (tvshow === null) {
-            sendTextMessage(sender, "TV show or movie was not found!" + emoji.not_found)
+            sendTextMessage(sender, "TV show or movie was not found!" + not_found)
             return
           }
-          sendTextMessage(sender, tvshow.title + " (" + tvshow.rating + " on IMDB)")
-          sendTextMessage(sender, tvshow.plot.substring(0, 250) + "...")
-          sendTextMessage(sender, "View on IMDB: http://www.imdb.com/title/" + tvshow.imdbid)
+          sendTextMessage(sender, title_emj + tvshow.title + " (" + tvshow.rating + " on IMDB)")
+          sendTextMessage(sender, plot_emj + tvshow.plot.substring(0, 300) + "..")
+          sendTextMessage(sender, view_emj + "View on IMDB: http://www.imdb.com/title/" + tvshow.imdbid)
           // Find and show the correct last episode
           imdb.getReq({ name: tvshow.title }, (err, data) => {
             if (!err) {
               data.episodes((err, episodes) => { 
                 if (!err) {
                   let correct = getCorrectEpisode(episodes)
-                  sendTextMessage(sender, "Last episode aired was \"" + correct.name + "\" on " + correct.released.toDateString() + ".")
+                  sendTextMessage(sender, aired_emj + "Last episode aired was \"" + correct.name + "\" on " + correct.released.toDateString() + ".")
                 } else {
                   console.log(err)
                 }
