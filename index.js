@@ -27,6 +27,11 @@ app.get('/webhook/', function (req, res) {
   res.send('Error, wrong token')
 })
 
+const emoji = {
+  not_found: 'U+1F644',
+  sun: 'U+1F60E'
+}
+
 app.post('/webhook/', function (req, res) {
   let messaging_events = req.body.entry[0].messaging
   // Loop through messaging events
@@ -40,11 +45,11 @@ app.post('/webhook/', function (req, res) {
       // Filter text
       text = text.toLowerCase()
       if (text == "hi" || text == "hey" || text == "hello") {
-        sendTextMessage(sender, "Please give me a TV show or a movie!<3")
+        sendTextMessage(sender, "Please give me a TV show or a movie!" + emoji.sun)
       } else {
         getShow(text, function (tvshow) {
           if (tvshow === null) {
-            sendTextMessage(sender, "TV show or movie was not found!:/")
+            sendTextMessage(sender, "TV show or movie was not found!" + emoji.not_found)
             return
           }
           sendTextMessage(sender, tvshow.title + " (" + tvshow.rating + " on IMDB)")
