@@ -21,7 +21,7 @@ app.get('/', function (req, res) {
 
 // Privacy policy page
 app.get('/privacy/', function (req, res) {
-  res.send('Privacy policy placeholder')
+  res.sendFile(__dirname + 'privacy.html');
 })
 
 // Facebook verification
