@@ -28,8 +28,9 @@ app.get('/webhook/', function (req, res) {
 })
 
 const emoji = {
-  not_found: 'U+1F644',
-  sun: 'U+1F60E'
+  not_found: '🙄',
+  heart: '❤️',
+  sun: '😎'
 }
 
 app.post('/webhook/', function (req, res) {
