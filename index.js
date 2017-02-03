@@ -63,8 +63,7 @@ app.post('/webhook/', function (req, res) {
       } else {
         getShow(text, function (tvshow) {
           if (tvshow === null) {
-            sendTextMessage(sender, "TV show or movie was not found!" + not_found)
-            return
+            console.log(tvshow)
           }
           sendTextMessage(sender, title_emj + tvshow.title + " (" + tvshow.rating + " on IMDB)")
           sendTextMessage(sender, plot_emj + tvshow.plot.substring(0, 300) + "..")
