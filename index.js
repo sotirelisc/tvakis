@@ -63,12 +63,14 @@ app.post('/webhook/', function (req, res) {
       } else {
         imdb.getReq({ name: text }, (err, tvshow) => {
           if (err) {
+            sendTextMessage(sender, "I'm feeling sick and I'm unable to search right now. Try again later!" + not_found)
             console.log(err)
             return
           }
           sendTextMessage(sender, title_emj + " " + tvshow.title + " (" + tvshow.rating + " on IMDB)")
           sendTextMessage(sender, plot_emj + " " + tvshow.plot.substring(0, 300) + "..")
           sendTextMessage(sender, view_emj + " http://www.imdb.com/title/" + tvshow.imdbid)
+          console.log(tvshow.title)
           // Find and show the correct last episode
           imdb.getReq({ name: tvshow.title }, (err, data) => {
             if (!err) {
@@ -79,40 +81,15 @@ app.post('/webhook/', function (req, res) {
                 } else {
                   console.log(err)
                 }
-              });
+              })
             }
-          });
+          })
         })
       }
     }
   }
   res.sendStatus(200)
 })
-
-// Get TV show based on title
-function getShow(title, cb) {
-  imdb.getReq({ name: title }, (err, tvshow) => {
-    if (!err) cb(tvshow)
-    else cb("not_found")
-  })
-}
-
-function getLastEpisode(tvshow) {
-  imdb.getReq({ name: tvshow }, (err, data) => {
-    if (!err) {
-      data.episodes((err, episodes) => { 
-        if (!err) {
-          let correct = getCorrectEpisode(episodes)
-          return correct
-        } else {
-          console.log(err)
-        }
-      });
-    } else {
-      console.log(err)
-    }
-  });
-}
 
 function getCorrectEpisode(episodes) {
   let i = episodes.length - 1
@@ -161,9 +138,9 @@ function createGreetingMsgConnector(data) {
     json: data
   }, function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      console.log("Greeting message set successfully!");
+      console.log("Greeting message set successfully!")
     } else {
-      console.error("Failed to set greeting message!");
+      console.error("Failed to set greeting message!")
     }
   });
 }
@@ -172,10 +149,10 @@ function setGreetingMsg() {
   var greetingMsgData = {
     setting_type: "greeting",
     greeting: {
-      text:"Hi {{user_first_name}}, I'm TVakis! :D Give me the name of a TV show or movie and I'll search it for you!"
+      text: "Hi {{user_first_name}}, I'm TVakis! :D Give me the name of a TV show or movie and I'll search it for you!"
     }
   };
-  createGreetingMsgConnector(greetingMsgData);
+  createGreetingMsgConnector(greetingMsgData)
 }
 
 // Run server
