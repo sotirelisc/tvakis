@@ -57,6 +57,11 @@ app.post('/webhook/', function (req, res) {
     if (event.message && event.message.text) {
       // Parse actual text
       let text = event.message.text
+      // Drop messaging if the message is bigger than usual
+      if (text.length > 200) {
+        sendTextMessage(sender, "Are you sure that's the name?" + not_found)
+        return
+      }
       // Filter text
       text = text.toLowerCase()
       if (text == "hi" || text == "hey" || text == "hello") {
