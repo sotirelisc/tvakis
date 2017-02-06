@@ -35,6 +35,7 @@ app.get('/webhook/', function (req, res) {
 // Define emojis
 const emojis = {
   not_found: '🙄',
+  sick: '🤢',
   heart: '❤️',
   sun: '😎',
   title_emj: '📺',
@@ -45,7 +46,7 @@ const emojis = {
 
 app.post('/webhook/', function (req, res) {
   // Destructuring
-  const { title_emj, plot_emj, view_emj, aired_emj, sun, not_found } = emojis;
+  const { title_emj, plot_emj, view_emj, aired_emj, sun, not_found, sick } = emojis;
   
   let messaging_events = req.body.entry[0].messaging
   // Loop through messaging events
@@ -66,7 +67,7 @@ app.post('/webhook/', function (req, res) {
             if (err.message.includes("not found")) {
               sendTextMessage(sender, "The TV show or movie was not found. Sorry!" + not_found)
             } else {
-              sendTextMessage(sender, "I'm feeling sick and I'm unable to search right now. Try again later!" + not_found)
+              sendTextMessage(sender, "I'm feeling sick and I'm unable to search right now. Try again later!" + sick)
               console.log(err)
             }
             return
