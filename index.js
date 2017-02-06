@@ -63,8 +63,12 @@ app.post('/webhook/', function (req, res) {
       } else {
         imdb.getReq({ name: text }, (err, tvshow) => {
           if (err) {
-            sendTextMessage(sender, "I'm feeling sick and I'm unable to search right now. Try again later!" + not_found)
-            console.log(err)
+            if (err.message.includes("not found")) {
+              sendTextMessage(sender, "The TV show or movie was not found. Sorry!" + not_found)
+            } else {
+              sendTextMessage(sender, "I'm feeling sick and I'm unable to search right now. Try again later!" + not_found)
+              console.log(err)
+            }
             return
           }
           sendTextMessage(sender, title_emj + " " + tvshow.title + " (" + tvshow.rating + " on IMDB)")
