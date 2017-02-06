@@ -60,41 +60,41 @@ app.post('/webhook/', function (req, res) {
       // Drop messaging if the message is bigger than usual
       if (text.length > 200) {
         sendTextMessage(sender, "Are you sure that's the name?" + not_found)
-        return
-      }
-      // Filter text
-      text = text.toLowerCase()
-      if (text == "hi" || text == "hey" || text == "hello") {
-        sendTextMessage(sender, "Please give me a TV show or a movie!" + sun)
       } else {
-        imdb.getReq({ name: text }, (err, tvshow) => {
-          if (err) {
-            if (err.message.includes("not found")) {
-              sendTextMessage(sender, "The TV show or movie was not found. Sorry!" + not_found)
+        // Filter text
+        text = text.toLowerCase()
+        if (text == "hi" || text == "hey" || text == "hello") {
+          sendTextMessage(sender, "Please give me a TV show or a movie!" + sun)
+        } else {
+          imdb.getReq({ name: text }, (err, tvshow) => {
+            if (err) {
+              if (err.message.includes("not found")) {
+                sendTextMessage(sender, "The TV show or movie was not found. Sorry!" + not_found)
+              } else {
+                sendTextMessage(sender, "I'm feeling sick and I'm unable to search right now. Try again later!" + sick)
+                console.log(err)
+              }
             } else {
-              sendTextMessage(sender, "I'm feeling sick and I'm unable to search right now. Try again later!" + sick)
-              console.log(err)
-            }
-            return
-          }
-          sendTextMessage(sender, title_emj + " " + tvshow.title + " (" + tvshow.rating + " on IMDB)")
-          sendTextMessage(sender, plot_emj + " " + tvshow.plot.substring(0, 300) + "..")
-          sendTextMessage(sender, view_emj + " http://www.imdb.com/title/" + tvshow.imdbid)
-          console.log(tvshow.title)
-          // Find and show the correct last episode
-          imdb.getReq({ name: tvshow.title }, (err, data) => {
-            if (!err) {
-              data.episodes((err, episodes) => { 
+              sendTextMessage(sender, title_emj + " " + tvshow.title + " (" + tvshow.rating + " on IMDB)")
+              sendTextMessage(sender, plot_emj + " " + tvshow.plot.substring(0, 300) + "..")
+              sendTextMessage(sender, view_emj + " http://www.imdb.com/title/" + tvshow.imdbid)
+              console.log(tvshow.title)
+              // Find and show the correct last episode
+              imdb.getReq({ name: tvshow.title }, (err, data) => {
                 if (!err) {
-                  let correct = getCorrectEpisode(episodes)
-                  sendTextMessage(sender, aired_emj + "Last episode aired was \"" + correct.name + "\" on " + correct.released.toDateString() + ".")
-                } else {
-                  console.log(err)
+                  data.episodes((err, episodes) => { 
+                    if (!err) {
+                      let correct = getCorrectEpisode(episodes)
+                      sendTextMessage(sender, aired_emj + "Last episode aired was \"" + correct.name + "\" on " + correct.released.toDateString() + ".")
+                    } else {
+                      console.log(err)
+                    }
+                  })
                 }
               })
             }
           })
-        })
+        }
       }
     }
   }
