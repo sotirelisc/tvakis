@@ -76,8 +76,7 @@ app.post('/webhook/', function (req, res) {
               }
             } else {
               sendTextMessage(sender, title_emj + " " + tvshow.title + " (" + tvshow.rating + " on IMDB)")
-              sendTextMessage(sender, plot_emj + " " + tvshow.plot.substring(0, 300) + "..")
-              sendTextMessage(sender, view_emj + " http://www.imdb.com/title/" + tvshow.imdbid)
+              sendTextMessage(sender, plot_emj + " " + tvshow.plot + " " + view_emj + " http://www.imdb.com/title/" + tvshow.imdbid)
               console.log(tvshow.title)
               // Find and show the correct last episode
               imdb.getReq({ name: tvshow.title }, (err, data) => {
