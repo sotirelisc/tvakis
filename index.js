@@ -66,7 +66,7 @@ app.post('/webhook/', function (req, res) {
         // Filter text
         text = text.toLowerCase()
         if (text == "hi" || text == "hey" || text == "hello") {
-          sendTextMessage(sender, "Please give me a TV show or a movie!" + sun)
+          sendTextMessage(sender, "Hello! Please give me a TV show or a movie!" + sun)
         } else {
           mdb.searchTv({ query: text }, (err, res) => {
             if (err) {
@@ -79,7 +79,13 @@ app.post('/webhook/', function (req, res) {
                 console.log(err)
                 return
               }
-              sendTextMessage(sender, title_emj + " " + res.name + " (Average Rating: " + res.vote_average + ")\n" + plot_emj + " " + res.overview.substring(0, 600))
+              // Split the overview in 2 messages if more than 550 chars (Facebook allows 640 chars message max)
+              if (res.overview.length > 550) {
+                sendTextMessage(sender, title_emj + " " + res.name + " (Average Rating: " + res.vote_average + ")\n" + plot_emj + " " + res.overview.substring(0, 550) + "..")
+                sendTextMessage(sender, ".." + res.overview.substring(550, 1000))
+              } else {
+                sendTextMessage(sender, title_emj + " " + res.name + " (Average Rating: " + res.vote_average + ")\n" + plot_emj + " " + res.overview)
+              }
               console.log(res.name)
               mdb.tvSeasonInfo({ id: res.id, season_number: res.number_of_seasons }, (err, res) => {
                 if (err) {
