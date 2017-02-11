@@ -6,6 +6,8 @@ const request = require('request')
 const app = express()
 const imdb = require('imdb-api')
 
+const mdb = require('moviedb')(process.env.TMDBKEY);
+
 app.set('port', (process.env.PORT || 5000))
 
 // Process application/x-www-form-urlencoded
@@ -66,32 +68,30 @@ app.post('/webhook/', function (req, res) {
         if (text == "hi" || text == "hey" || text == "hello") {
           sendTextMessage(sender, "Please give me a TV show or a movie!" + sun)
         } else {
-          imdb.getReq({ name: text }, (err, tvshow) => {
+          mdb.searchTv({ query: text }, (err, res) => {
             if (err) {
-              if (err.message.includes("not found")) {
-                sendTextMessage(sender, "The TV show or movie was not found. Sorry!" + not_found)
-              } else {
-                sendTextMessage(sender, "I'm feeling sick and I'm unable to search right now. Try again later!" + sick)
-                console.log(err)
-              }
-            } else {
-              sendTextMessage(sender, title_emj + " " + tvshow.title + " (" + tvshow.rating + " on IMDB)")
-              sendTextMessage(sender, plot_emj + " " + tvshow.plot + " " + view_emj + " http://www.imdb.com/title/" + tvshow.imdbid)
-              console.log(tvshow.title)
-              // Find and show the correct last episode
-              imdb.getReq({ name: tvshow.title }, (err, data) => {
-                if (!err) {
-                  data.episodes((err, episodes) => { 
-                    if (!err) {
-                      let correct = getCorrectEpisode(episodes)
-                      sendTextMessage(sender, aired_emj + "Last episode aired was \"" + correct.name + "\" on " + correct.released.toDateString() + ".")
-                    } else {
-                      console.log(err)
-                    }
-                  })
-                }
-              })
+              console.log(err)
+              return
             }
+            sendTextMessage(sender, title_emj + " " + res.results[0].name)
+            sendTextMessage(sender, plot_emj + " " + res.results[0].overview)
+            console.log(res.results[0].name)
+            // console.log(res.results[0].overview)
+            mdb.tvInfo({ id: res.results[0].id }, (err, res) => {
+              if (err) {
+                console.log(err)
+                return
+              }
+              mdb.tvSeasonInfo({ id: res.id, season_number: res.number_of_seasons }, (err, res) => {
+                if (err) {
+                  console.log(err)
+                  return
+                }
+                let last_episode = res.episodes[res.episodes.length-2]
+                // console.log(res.episodes[res.episodes.length-2])
+                sendTextMessage(sender, aired_emj + "Last episode aired was \"" + last_episode.name + "\" on " + last_episode.air_date.toDateString() + ".")
+              })
+            })
           })
         }
       }
