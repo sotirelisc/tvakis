@@ -82,7 +82,7 @@ app.post('/webhook/', function (req, res) {
               // Split the overview in 2 messages if more than 550 chars (Facebook allows 640 chars message max)
               if (res.overview.length > 550) {
                 sendTextMessage(sender, title_emj + " " + res.name + " (Average Rating: " + res.vote_average + ")\n" + plot_emj + " " + res.overview.substring(0, 550) + "..",
-                  sendTextMessage(sender, ".." + res.overview.substring(550, 1000)))
+                  sendTextMessage(sender, ".." + res.overview.substring(550, 1000), null))
               } else {
                 sendTextMessage(sender, title_emj + " " + res.name + " (Average Rating: " + res.vote_average + ")\n" + plot_emj + " " + res.overview)
               }
@@ -126,7 +126,7 @@ function getCorrectEpisode(episodes) {
 const token = process.env.FB_PAGE_ACCESS_TOKEN
 
 // Handles messaging from server to bot
-function sendTextMessage(sender, text, cb) {
+function sendTextMessage(sender, text, next) {
   let messageData = { text:text }
   request({
     url: 'https://graph.facebook.com/v2.6/me/messages',
@@ -142,7 +142,7 @@ function sendTextMessage(sender, text, cb) {
     } else if (response.body.error) {
       console.log('Error: ', response.body.error)
     } else {
-      cb()
+      return next()
     }
   })
 }
