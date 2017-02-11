@@ -88,8 +88,9 @@ app.post('/webhook/', function (req, res) {
                   return
                 }
                 let last_episode = res.episodes[res.episodes.length-2]
+                let air_date = new Date(last_episode.air_date)
                 // console.log(res.episodes[res.episodes.length-2])
-                sendTextMessage(sender, aired_emj + "Last episode aired was \"" + last_episode.name + "\" on " + last_episode.air_date.toDateString() + ".")
+                sendTextMessage(sender, aired_emj + "Last episode aired was \"" + last_episode.name + "\" on " + air_date.toDateString() + ".")
               })
             })
           })
