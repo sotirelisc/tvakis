@@ -4,14 +4,13 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
-const imdb = require('imdb-api')
 
 const mdb = require('moviedb')(process.env.TMDBKEY);
 
 app.set('port', (process.env.PORT || 5000))
 
 // Process application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({ extended: false }))
 
 // Process application/json
 app.use(bodyParser.json())
@@ -61,16 +60,20 @@ app.post('/webhook/', function (req, res) {
       let text = event.message.text
       // Drop messaging if the message is bigger than usual
       if (text.length > 200) {
-        sendTextMessage(sender, "Are you sure that's the name?" + not_found)
+        sendTextMessage(sender, "Are you sure that's the name?" + not_found, null)
       } else {
         // Filter text
         text = text.toLowerCase()
         if (text == "hi" || text == "hey" || text == "hello") {
-          sendTextMessage(sender, "Hello! Please give me a TV show or a movie!" + sun)
+          sendTextMessage(sender, "Hello! Please give me a TV show or a movie!" + sun, null)
         } else {
           mdb.searchTv({ query: text }, (err, res) => {
             if (err) {
               console.log(err)
+              return
+            }
+            if (res.results.length === 0) {
+              sendTextMessage(sender, "The TV show or movie was not found!" + not_found, null)
               return
             }
             console.log(res.results[0].name)
@@ -127,7 +130,7 @@ const token = process.env.FB_PAGE_ACCESS_TOKEN
 
 // Handles messaging from server to bot
 function sendTextMessage(sender, text, next) {
-  let messageData = { text:text }
+  let messageData = { text: text }
   request({
     url: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: token },
