@@ -84,7 +84,7 @@ app.post('/webhook/', function (req, res) {
                 sendTextMessage(sender, title_emj + " " + res.name + " (Average Rating: " + res.vote_average + ")\n" + plot_emj + " " + res.overview.substring(0, 550) + "..",
                   sendTextMessage(sender, ".." + res.overview.substring(550, 1000), null))
               } else {
-                sendTextMessage(sender, title_emj + " " + res.name + " (Average Rating: " + res.vote_average + ")\n" + plot_emj + " " + res.overview)
+                sendTextMessage(sender, title_emj + " " + res.name + " (Average Rating: " + res.vote_average + ")\n" + plot_emj + " " + res.overview, null)
               }
               console.log(res.name)
               mdb.tvSeasonInfo({ id: res.id, season_number: res.number_of_seasons }, (err, res) => {
@@ -95,7 +95,7 @@ app.post('/webhook/', function (req, res) {
                 let last_episode = res.episodes[res.episodes.length-2]
                 let air_date = new Date(last_episode.air_date)
                 // console.log(res.episodes[res.episodes.length-2])
-                sendTextMessage(sender, aired_emj + "Last episode aired was \"" + last_episode.name + "\" on " + air_date.toDateString() + ".")
+                sendTextMessage(sender, aired_emj + "Last episode aired was \"" + last_episode.name + "\" on " + air_date.toDateString() + ".", null)
               })
             })
           })
