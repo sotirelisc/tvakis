@@ -73,14 +73,13 @@ app.post('/webhook/', function (req, res) {
               console.log(err)
               return
             }
-            sendTextMessage(sender, title_emj + " " + res.results[0].name + "\n" + plot_emj + " " + res.results[0].overview.substring(0, 600))
-            console.log(res.results[0].name)
-            // console.log(res.results[0].overview)
             mdb.tvInfo({ id: res.results[0].id }, (err, res) => {
               if (err) {
                 console.log(err)
                 return
               }
+              sendTextMessage(sender, title_emj + " " + res.name + " (Average Rating: " + res.vote_average + ")\n" + plot_emj + " " + res.overview.substring(0, 600))
+              console.log(res.results[0].name)
               mdb.tvSeasonInfo({ id: res.id, season_number: res.number_of_seasons }, (err, res) => {
                 if (err) {
                   console.log(err)
