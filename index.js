@@ -84,10 +84,10 @@ app.post('/webhook/', function (req, res) {
               }
               // Split the overview in 2 messages if more than 550 chars (Facebook allows 640 chars message max)
               if (res.overview.length > 550) {
-                sendTextMessage(sender, title_emj + " " + res.name + " (Average Rating: " + res.vote_average + ")\n" + plot_emj + " " + res.overview.substring(0, 550) + "..",
+                sendTextMessage(sender, title_emj + " " + res.name + " (" + res.vote_average + " average)\n" + plot_emj + " " + res.overview.substring(0, 550) + "..",
                   sendTextMessage(sender, ".." + res.overview.substring(550, 1000), null))
               } else {
-                sendTextMessage(sender, title_emj + " " + res.name + " (Average Rating: " + res.vote_average + ")\n" + plot_emj + " " + res.overview, null)
+                sendTextMessage(sender, title_emj + " " + res.name + " (" + res.vote_average + " average)\n" + plot_emj + " " + res.overview, null)
               }
               console.log(res.name)
               mdb.tvSeasonInfo({ id: res.id, season_number: res.number_of_seasons }, (err, res) => {
