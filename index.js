@@ -142,6 +142,7 @@ function sendTextMessage(sender, text, next) {
     } else if (response.body.error) {
       console.log('Error: ', response.body.error)
     } else {
+      if (next == null) return
       return next()
     }
   })
