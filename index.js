@@ -91,7 +91,7 @@ app.post('/webhook/', function (req, res) {
               }
               console.log(res.name)
               // Find correct last season
-              let last_season = res.number_of_seasons
+              let last_season = res.number_of_seasons - 1
               let last_season_date = new Date(res.seasons[last_season].air_date)
               let today = new Date()
               if (last_season_date > today) {
