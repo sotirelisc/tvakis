@@ -90,7 +90,15 @@ app.post('/webhook/', function (req, res) {
                 sendTextMessage(sender, title_emj + " " + res.name + " (" + res.vote_average + " average)\n" + plot_emj + " " + res.overview, null)
               }
               console.log(res.name)
-              mdb.tvSeasonInfo({ id: res.id, season_number: res.number_of_seasons }, (err, res) => {
+              // Find correct last season
+              let last_season = res.number_of_seasons
+              let last_season_date = new Date(res.seasons[last_season].air_date)
+              let today = new Date()
+              if (last_season_date > today) {
+                last_season--;
+              }
+              // Query last season's episodes
+              mdb.tvSeasonInfo({ id: res.id, season_number: last_season }, (err, res) => {
                 if (err) {
                   console.log(err)
                   return
