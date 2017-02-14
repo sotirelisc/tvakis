@@ -103,7 +103,7 @@ app.post('/webhook/', function (req, res) {
                   console.log(err)
                   return
                 }
-                let last_episode = res.episodes[res.episodes.length-2]
+                let last_episode = getCorrectLastEpisode(res)
                 let air_date = new Date(last_episode.air_date)
                 // console.log(res.episodes[res.episodes.length-2])
                 sendTextMessage(sender, aired_emj + "Last episode aired was \"" + last_episode.name + "\" on " + air_date.toDateString() + ".", null)
@@ -117,18 +117,18 @@ app.post('/webhook/', function (req, res) {
   res.sendStatus(200)
 })
 
-function getCorrectEpisode(episodes) {
-  let i = episodes.length - 1
-  let episode = episodes[i]
-  let ep_date = episode.released
+function getCorrectLastEpisode(res) {
+  let i = res.episodes.length-1
+  let episode = res.episodes[i]
+  let ep_date = new Date(episode.air_date)
 
   var today = new Date()
   
-  // We do not want the last episode to be later than to day
-  // or to have invalid date
-  while (ep_date > today || ep_date == "Invalid Date") {
-    episode = episodes[i]
-    ep_date = episode.released
+  // We do not want the last episode to be later than today
+  // Go to the previous one
+  while (ep_date > today) {
+    episode = res.episodes[i]
+    ep_date = new Date(episode.air_date)
     i--
   }
   return episode
