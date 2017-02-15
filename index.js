@@ -104,6 +104,7 @@ app.post('/webhook/', function (req, res) {
                   return
                 }
                 let last_episode = getCorrectLastEpisode(res)
+                let air_date = new Date(last_episode[0].air_date)
                 let last_str = "Last episode aired was \"" + last_episode.name + "\" on " + air_date.toDateString() + "."
                 
                 let next_episode
@@ -113,9 +114,7 @@ app.post('/webhook/', function (req, res) {
                   let next_episode_air = new Date(next_episode.air_date)
                   last_str = last_str + "\nNew episode airs on " + next_episode_air.toDateString() + "!"
                 }
-                
-                let air_date = new Date(last_episode[0].air_date)
-                // console.log(res.episodes[res.episodes.length-2])
+
                 sendTextMessage(sender, aired_emj + last_str, null)
               })
             })
