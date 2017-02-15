@@ -113,7 +113,12 @@ app.post('/webhook/', function (req, res) {
                 if (episode_number < res.episodes.length) {
                   next_episode = res.episodes[episode_number+1]
                   let next_episode_air = new Date(next_episode.air_date)
-                  last_str = last_str + "\n" + popcorn + "New episode airs on " + next_episode_air.toDateString() + "!"
+                  let today = new Date()
+                  if (next_episode_air == today) {
+                    last_str = last_str + "\n" + popcorn + "New episode airs today!"
+                  } else {
+                    last_str = last_str + "\n" + popcorn + "New episode airs in " + (next_episode_air - today) + " day(s) ("+ next_episode_air.toDateString() + ")!"
+                  }
                 }
 
                 sendTextMessage(sender, aired_emj + last_str, null)
