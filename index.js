@@ -104,9 +104,19 @@ app.post('/webhook/', function (req, res) {
                   return
                 }
                 let last_episode = getCorrectLastEpisode(res)
-                let air_date = new Date(last_episode.air_date)
+                let last_str = "Last episode aired was \"" + last_episode.name + "\" on " + air_date.toDateString() + "."
+                
+                let next_episode
+                let episode_number = last_episode[1]
+                if (episode_number < res.episodes.length) {
+                  next_episode = res.episodes[episode_number+1]
+                  let next_episode_air = new Date(next_episode.air_date)
+                  last_str = last_str + "\nNew episode airs on " + next_episode_air.toDateString() + "!"
+                }
+                
+                let air_date = new Date(last_episode[0].air_date)
                 // console.log(res.episodes[res.episodes.length-2])
-                sendTextMessage(sender, aired_emj + "Last episode aired was \"" + last_episode.name + "\" on " + air_date.toDateString() + ".", null)
+                sendTextMessage(sender, aired_emj + last_str, null)
               })
             })
           })
@@ -131,7 +141,8 @@ function getCorrectLastEpisode(res) {
     ep_date = new Date(episode.air_date)
     i--
   }
-  return episode
+  // Also return the position of the last episode
+  return [episode, i+1]
 }
 
 const token = process.env.FB_PAGE_ACCESS_TOKEN
