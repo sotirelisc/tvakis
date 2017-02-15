@@ -42,12 +42,13 @@ const emojis = {
   title_emj: '📺',
   plot_emj: '🎥',
   view_emj: '👉',
-  aired_emj: '✈️ '
+  aired_emj: '✈️ ',
+  popcorn: '🍿'
 }
 
 app.post('/webhook/', function (req, res) {
   // Destructuring
-  const { title_emj, plot_emj, view_emj, aired_emj, sun, not_found, sick } = emojis;
+  const { title_emj, plot_emj, view_emj, aired_emj, sun, not_found, popcorn } = emojis;
   
   let messaging_events = req.body.entry[0].messaging
   // Loop through messaging events
@@ -112,7 +113,7 @@ app.post('/webhook/', function (req, res) {
                 if (episode_number < res.episodes.length) {
                   next_episode = res.episodes[episode_number+1]
                   let next_episode_air = new Date(next_episode.air_date)
-                  last_str = last_str + "\nNew episode airs on " + next_episode_air.toDateString() + "!"
+                  last_str = last_str + "\n" + popcorn + "New episode airs on " + next_episode_air.toDateString() + "!"
                 }
 
                 sendTextMessage(sender, aired_emj + last_str, null)
