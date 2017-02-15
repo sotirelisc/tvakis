@@ -104,10 +104,11 @@ app.post('/webhook/', function (req, res) {
                   console.log(err)
                   return
                 }
+                // Get show's last episode (if exists)
                 let last_episode = getCorrectLastEpisode(res)
                 let air_date = new Date(last_episode[0].air_date)
                 let last_str = "Last episode aired was \"" + last_episode[0].name + "\" on " + air_date.toDateString() + "."
-                
+                // Get show's next episode (if exists)
                 let next_episode
                 let episode_number = last_episode[1]
                 if (episode_number < res.episodes.length) {
@@ -120,7 +121,6 @@ app.post('/webhook/', function (req, res) {
                     last_str = last_str + "\n" + popcorn + "New episode airs in " + getDaysDifference(today, next_episode_air) + " day(s) ("+ next_episode_air.toDateString() + ")!"
                   }
                 }
-
                 sendTextMessage(sender, aired_emj + last_str, null)
               })
             })
@@ -132,6 +132,7 @@ app.post('/webhook/', function (req, res) {
   res.sendStatus(200)
 })
 
+// Calculates the days difference between two dates
 function getDaysDifference(date1, date2) {
   let timeDiff = Math.abs(date2.getTime() - date1.getTime());
   return Math.ceil(timeDiff / (1000 * 3600 * 24));
