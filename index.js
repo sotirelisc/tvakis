@@ -106,7 +106,7 @@ app.post('/webhook/', function (req, res) {
                 }
                 let last_episode = getCorrectLastEpisode(res)
                 let air_date = new Date(last_episode[0].air_date)
-                let last_str = "Last episode aired was \"" + last_episode.name + "\" on " + air_date.toDateString() + "."
+                let last_str = "Last episode aired was \"" + last_episode[0].name + "\" on " + air_date.toDateString() + "."
                 
                 let next_episode
                 let episode_number = last_episode[1]
