@@ -117,7 +117,7 @@ app.post('/webhook/', function (req, res) {
                   if (next_episode_air == today) {
                     last_str = last_str + "\n" + popcorn + "New episode airs today!"
                   } else {
-                    last_str = last_str + "\n" + popcorn + "New episode airs in " + (next_episode_air - today) + " day(s) ("+ next_episode_air.toDateString() + ")!"
+                    last_str = last_str + "\n" + popcorn + "New episode airs in " + getDaysDifference(today, next_episode_air) + " day(s) ("+ next_episode_air.toDateString() + ")!"
                   }
                 }
 
@@ -131,6 +131,11 @@ app.post('/webhook/', function (req, res) {
   }
   res.sendStatus(200)
 })
+
+function getDaysDifference(date1, date2) {
+  let timeDiff = Math.abs(date2.getTime() - date1.getTime());
+  return Math.ceil(timeDiff / (1000 * 3600 * 24));
+}
 
 function getCorrectLastEpisode(res) {
   let i = res.episodes.length-1
