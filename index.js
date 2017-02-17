@@ -81,6 +81,9 @@ app.post('/webhook/', function (req, res) {
         text = text.toLowerCase()
         if (text == "hi" || text == "hey" || text == "hello") {
           sendTextMessage(sender, "Hello! Please give me a TV show or a movie!" + sun, null)
+        // Help command
+        } else if (text == "/help") {
+          sendTextMessage(sender, help_msg, null)
         } else {
           let title
           // We're searching for movies
