@@ -53,12 +53,12 @@ app.post('/webhook/', function (req, res) {
   const { title_emj, plot_emj, aired_emj, sun, not_found, popcorn, film, link, heart, view_emj } = emojis;
   
   const help_msg = heart + " Hey there, I'm TVakis!"
-                  + "\n" + title_emj + " You can give me the name of a TV show and I'll give you info about it."
+                  + "\n" + title_emj + " You can give me the name of a TV show and I'll give you info about it. Like when the last episode was and when the new one is gonna be!"
                   + "\n" + popcorn + " I can also tell you about a movie if you add the word 'Movie' before its title!"
                   + "\n\n" + view_emj + " For example, type: movie interstellar"
                   + "\n" + plot_emj + " Or just: game of thrones"
                   
-  const about_msg = "I was made by Christos Sotirelis in Greece! Send questions or feedback at: sotirelisc@gmail.com"
+  const about_msg = "I am 1.1 versions old and was made by Christos Sotirelis in Greece! Send questions or feedback at: sotirelisc@gmail.com"
   
   let messaging_events = req.body.entry[0].messaging
   // Loop through messaging events
