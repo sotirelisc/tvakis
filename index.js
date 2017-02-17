@@ -57,6 +57,8 @@ app.post('/webhook/', function (req, res) {
                   + "\n" + popcorn + " I can also tell you about a movie if you add the word 'Movie' before its title!"
                   + "\n\n" + view_emj + " For example, type: movie interstellar"
                   + "\n" + plot_emj + " Or just: game of thrones"
+                  
+  const about_msg = "I was made by Christos Sotirelis in Greece! Send questions or feedback at: sotirelisc@gmail.com"
   
   let messaging_events = req.body.entry[0].messaging
   // Loop through messaging events
@@ -68,6 +70,8 @@ app.post('/webhook/', function (req, res) {
     if (event.postback) {
       if (event.postback.payload == "HELP_PAYLOAD") {
         sendTextMessage(sender, help_msg, null)
+      } else if (event.postback.payload == "ABOUT_PAYLOAD") {
+        sendTextMessage(sender, about_msg, null)
       }
       continue
     }
@@ -265,8 +269,13 @@ function persistentMenu() {
           payload: "HELP_PAYLOAD"
         },
         {
+          type: "postback",
+          title: "About Me",
+          payload: "ABOUT_PAYLOAD"
+        },
+        {
           type: "web_url",
-          title: "TheMovieDB",
+          title: "Powered by TheMovieDB",
           url: "https://www.themoviedb.org"
         }
       ]
