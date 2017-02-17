@@ -103,7 +103,7 @@ app.post('/webhook/', function (req, res) {
                 sendTextMessage(sender, "The TV show or movie was not found!" + not_found, null)
                 return
               }
-              sendTextMessage(sender, title_emj + " " + res.results[0].title + " (" + res.results[0].vote_average + " average)\n" + plot_emj + " " + res.results[0].overview.substring(0, 550), null)
+              sendTextMessage(sender, title_emj + " " + res.results[0].title + " (" + res.results[0].vote_average + " average)\n" + plot_emj + " " + res.results[0].overview.substring(0, 550) + "..", null)
               let release_date = new Date(res.results[0].release_date)
               sendTextMessage(sender, film + " " + res.results[0].title + " was released on " + release_date.getFullYear() + ".\n" + link + " More info at: https://www.themoviedb.org/movie/" + res.results[0].id, null)
             })
