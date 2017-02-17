@@ -50,11 +50,12 @@ const emojis = {
 
 app.post('/webhook/', function (req, res) {
   // Destructuring emojis
-  const { title_emj, plot_emj, aired_emj, sun, not_found, popcorn, film, link } = emojis;
+  const { title_emj, plot_emj, aired_emj, sun, not_found, popcorn, film, link, heart, view_emj } = emojis;
   
-  const help_msg = "Hi, I'm TVakis. You can give me the name of a TV show and I'll give you info about it.\n"
-                  + "I can also tell you about a movie if you prepend the word 'Movie' before its title!\n"
-                  + "For example, type: movie interstellar"
+  const help_msg = "Hey there, I'm TVakis!" + heart +
+                  + "\n" + title_emj + " You can give me the name of a TV show and I'll give you info about it."
+                  + "\n" + popcorn + " I can also tell you about a movie if you prepend the word 'Movie' before its title!"
+                  + "\n\n" + view_emj + " For example, type: movie interstellar"
   
   let messaging_events = req.body.entry[0].messaging
   // Loop through messaging events
