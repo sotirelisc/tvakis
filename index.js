@@ -71,6 +71,7 @@ app.post('/webhook/', function (req, res) {
           let title
           if (text.startsWith("movie")) {
             title = getTitleFromText(text)
+            console.log("gotTitleFromText: " + title)
             mdb.searchMovie({ query: title }, (err, res) => {
               if (err) {
                 console.log(err)
