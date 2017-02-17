@@ -43,12 +43,14 @@ const emojis = {
   plot_emj: '🎥',
   view_emj: '👉',
   aired_emj: '✈️ ',
-  popcorn: '🍿'
+  popcorn: '🍿',
+  link: '🔗',
+  film: '🎞️'
 }
 
 app.post('/webhook/', function (req, res) {
-  // Destructuring
-  const { title_emj, plot_emj, view_emj, aired_emj, sun, not_found, popcorn } = emojis;
+  // Destructuring emojis
+  const { title_emj, plot_emj, aired_emj, sun, not_found, popcorn, film, link } = emojis;
   
   let messaging_events = req.body.entry[0].messaging
   // Loop through messaging events
@@ -69,7 +71,8 @@ app.post('/webhook/', function (req, res) {
           sendTextMessage(sender, "Hello! Please give me a TV show or a movie!" + sun, null)
         } else {
           let title
-          if (text.startsWith("movie")) {
+          // We're searching for movies
+          if (text.startsWith("movie ")) {
             title = getTitleFromText(text)
             console.log("gotTitleFromText: " + title)
             mdb.searchMovie({ query: title }, (err, res) => {
@@ -79,11 +82,9 @@ app.post('/webhook/', function (req, res) {
               }
               sendTextMessage(sender, title_emj + " " + res.results[0].title + " (" + res.results[0].vote_average + " average)\n" + plot_emj + " " + res.results[0].overview, null)
               let release_date = new Date(res.results[0].release_date)
-              console.log(res.results[0].title + " (" + res.results[0].vote_average + ")")
-              console.log(res.results[0].overview)
-              console.log("https://www.themoviedb.org/movie/" + res.results[0].id)
-              console.log(release_date.getFullYear())
+              sendTextMessage(sender, film + " " + res.results[0].title + " was released on " + release_date.getFullYear() + ".\n" + link + " More info at: https://www.themoviedb.org/movie/" + res.results[0].id, null)
             })
+          // We're searching for TV shows
           } else {
             mdb.searchTv({ query: text }, (err, res) => {
               if (err) {
