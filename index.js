@@ -244,7 +244,7 @@ function setGreetingMsg() {
   var greetingMsgData = {
     setting_type: "greeting",
     greeting: {
-      text: "Hi {{user_first_name}}, I'm TVakis! :D Give me the name of a TV show or movie and I'll search it for you!"
+      text: "Hi {{user_first_name}}, I'm TVakis! Give me a TV show or add 'movie' before a movie title and I'll search it for you! For help, type /help"
     }
   };
   createGreetingMsgConnector(greetingMsgData)
