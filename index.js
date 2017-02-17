@@ -68,63 +68,80 @@ app.post('/webhook/', function (req, res) {
         if (text == "hi" || text == "hey" || text == "hello") {
           sendTextMessage(sender, "Hello! Please give me a TV show or a movie!" + sun, null)
         } else {
-          mdb.searchTv({ query: text }, (err, res) => {
-            if (err) {
-              console.log(err)
-              return
-            }
-            if (res.results.length === 0) {
-              sendTextMessage(sender, "The TV show or movie was not found!" + not_found, null)
-              return
-            }
-            console.log(res.results[0].name)
-            mdb.tvInfo({ id: res.results[0].id }, (err, res) => {
+          let title
+          if (text.startsWith("movie")) {
+            title = getTitleFromText(text)
+            mdb.searchMovie({ query: title }, (err, res) => {
               if (err) {
                 console.log(err)
                 return
               }
-              // Split the overview in 2 messages if more than 550 chars (Facebook allows 640 chars message max)
-              if (res.overview.length > 550) {
-                sendTextMessage(sender, title_emj + " " + res.name + " (" + res.vote_average + " average)\n" + plot_emj + " " + res.overview.substring(0, 550) + "..",
-                  sendTextMessage(sender, ".." + res.overview.substring(550, 1000), null))
-              } else {
-                sendTextMessage(sender, title_emj + " " + res.name + " (" + res.vote_average + " average)\n" + plot_emj + " " + res.overview, null)
+              sendTextMessage(sender, title_emj + " " + res.results[0].title + " (" + res.results[0].vote_average + " average)\n" + plot_emj + " " + res.results[0].overview, null)
+              let release_date = new Date(res.results[0].release_date)
+              console.log(res.results[0].title + " (" + res.results[0].vote_average + ")")
+              console.log(res.results[0].overview)
+              console.log("https://www.themoviedb.org/movie/" + res.results[0].id)
+              console.log(release_date.getFullYear())
+            })
+          } else {
+            mdb.searchTv({ query: text }, (err, res) => {
+              if (err) {
+                console.log(err)
+                return
               }
-              console.log(res.name)
-              // Find correct last season
-              let last_season = res.number_of_seasons
-              let last_season_date = new Date(res.seasons[last_season-1].air_date)
-              let today = new Date()
-              if (last_season_date > today) {
-                last_season--;
+              if (res.results.length === 0) {
+                sendTextMessage(sender, "The TV show or movie was not found!" + not_found, null)
+                return
               }
-              // Query last season's episodes
-              mdb.tvSeasonInfo({ id: res.id, season_number: last_season }, (err, res) => {
+              console.log(res.results[0].name)
+              mdb.tvInfo({ id: res.results[0].id }, (err, res) => {
                 if (err) {
                   console.log(err)
                   return
                 }
-                // Get show's last episode (if exists)
-                let last_episode = getCorrectLastEpisode(res)
-                let air_date = new Date(last_episode[0].air_date)
-                let last_str = "Last episode aired was \"" + last_episode[0].name + "\" on " + air_date.toDateString() + "."
-                // Get show's next episode (if exists)
-                let next_episode
-                let episode_number = last_episode[1]
-                if (episode_number < res.episodes.length) {
-                  next_episode = res.episodes[episode_number+1]
-                  let next_episode_air = new Date(next_episode.air_date)
-                  let today = new Date()
-                  if (next_episode_air == today) {
-                    last_str = last_str + "\n" + popcorn + "New episode airs today!"
-                  } else {
-                    last_str = last_str + "\n" + popcorn + "New episode airs in " + getDaysDifference(today, next_episode_air) + " day(s) ("+ next_episode_air.toDateString() + ")!"
-                  }
+                // Split the overview in 2 messages if more than 550 chars (Facebook allows 640 chars message max)
+                if (res.overview.length > 550) {
+                  sendTextMessage(sender, title_emj + " " + res.name + " (" + res.vote_average + " average)\n" + plot_emj + " " + res.overview.substring(0, 550) + "..",
+                    sendTextMessage(sender, ".." + res.overview.substring(550, 1000), null))
+                } else {
+                  sendTextMessage(sender, title_emj + " " + res.name + " (" + res.vote_average + " average)\n" + plot_emj + " " + res.overview, null)
                 }
-                sendTextMessage(sender, aired_emj + last_str, null)
+                console.log(res.name)
+                // Find correct last season
+                let last_season = res.number_of_seasons
+                let last_season_date = new Date(res.seasons[last_season-1].air_date)
+                let today = new Date()
+                if (last_season_date > today) {
+                  last_season--;
+                }
+                // Query last season's episodes
+                mdb.tvSeasonInfo({ id: res.id, season_number: last_season }, (err, res) => {
+                  if (err) {
+                    console.log(err)
+                    return
+                  }
+                  // Get show's last episode (if exists)
+                  let last_episode = getCorrectLastEpisode(res)
+                  let air_date = new Date(last_episode[0].air_date)
+                  let last_str = "Last episode aired was \"" + last_episode[0].name + "\" on " + air_date.toDateString() + "."
+                  // Get show's next episode (if exists)
+                  let next_episode
+                  let episode_number = last_episode[1]
+                  if (episode_number < res.episodes.length) {
+                    next_episode = res.episodes[episode_number+1]
+                    let next_episode_air = new Date(next_episode.air_date)
+                    let today = new Date()
+                    if (next_episode_air == today) {
+                      last_str = last_str + "\n" + popcorn + "New episode airs today!"
+                    } else {
+                      last_str = last_str + "\n" + popcorn + "New episode airs in " + getDaysDifference(today, next_episode_air) + " day(s) ("+ next_episode_air.toDateString() + ")!"
+                    }
+                  }
+                  sendTextMessage(sender, aired_emj + last_str, null)
+                })
               })
             })
-          })
+          }
         }
       }
     }
