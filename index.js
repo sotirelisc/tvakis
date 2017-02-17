@@ -262,7 +262,8 @@ function persistentMenu() {
     } else if (response.body.error) {
       console.log('Error: ', response.body.error)
     }
-})
+  })
+}
 
 // Run server
 app.listen(app.get('port'), function() {
