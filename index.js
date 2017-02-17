@@ -56,6 +56,11 @@ app.post('/webhook/', function (req, res) {
   // Loop through messaging events
   for (let i = 0; i < messaging_events.length; i++) {
     let event = req.body.entry[0].messaging[i]
+    if (event.postback) {
+      let text = JSON.stringify(event.postback)
+      sendTextMessage(sender, "Postback received: "+text.substring(0, 200), token)
+      continue
+    }
     // Get sender (user) info
     let sender = event.sender.id
     if (event.message && event.message.text) {
