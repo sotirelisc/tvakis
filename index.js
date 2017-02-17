@@ -161,6 +161,7 @@ app.post('/webhook/', function (req, res) {
                     } else {
                       last_str = last_str + "\n" + popcorn + "New episode airs in " + getDaysDifference(today, next_episode_air) + " day(s) ("+ next_episode_air.toDateString() + ")!"
                     }
+                    last_str = last_str + "\n" + next_episode.overview
                   }
                   sendTextMessage(sender, aired_emj + last_str, null)
                 })
