@@ -54,8 +54,9 @@ app.post('/webhook/', function (req, res) {
   
   const help_msg = heart + " Hey there, I'm TVakis!"
                   + "\n" + title_emj + " You can give me the name of a TV show and I'll give you info about it."
-                  + "\n" + popcorn + "I can also tell you about a movie if you prepend the word 'Movie' before its title!"
+                  + "\n" + popcorn + " I can also tell you about a movie if you add the word 'Movie' before its title!"
                   + "\n\n" + view_emj + " For example, type: movie interstellar"
+                  + "\n" + plot_emj + " Or just: game of thrones"
   
   let messaging_events = req.body.entry[0].messaging
   // Loop through messaging events
