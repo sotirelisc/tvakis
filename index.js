@@ -138,6 +138,11 @@ function getDaysDifference(date1, date2) {
   return Math.ceil(timeDiff / (1000 * 3600 * 24));
 }
 
+// It actually removes 'movie' string from title
+function getTitleFromText(text) {
+  return text.substring(6, text.length)
+}
+
 function getCorrectLastEpisode(res) {
   let i = res.episodes.length-1
   let episode = res.episodes[i]
