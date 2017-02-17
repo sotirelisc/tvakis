@@ -52,14 +52,21 @@ app.post('/webhook/', function (req, res) {
   // Destructuring emojis
   const { title_emj, plot_emj, aired_emj, sun, not_found, popcorn, film, link } = emojis;
   
+  const help_msg = "Hi, I'm TVakis. You can give me the name of a TV show and I'll give you info about it.\n"
+                  + "I can also tell you about a movie if you prepend the word 'Movie' before its title!\n"
+                  + "For example, type: movie interstellar"
+  
   let messaging_events = req.body.entry[0].messaging
   // Loop through messaging events
   for (let i = 0; i < messaging_events.length; i++) {
     let event = req.body.entry[0].messaging[i]
     // Get sender (user) info
     let sender = event.sender.id
+    // Handle postbacks (for example, from persistent menu)
     if (event.postback) {
-      console.log(event.postback)
+      if (event.postback.payload == "HELP_PAYLOAD") {
+        sendTextMessage(sender, help_msg, null)
+      }
       continue
     }
     if (event.message && event.message.text) {
@@ -243,21 +250,21 @@ function persistentMenu() {
     url: 'https://graph.facebook.com/v2.6/me/thread_settings',
     qs: { access_token: token },
     method: 'POST',
-    json:{
-        setting_type : "call_to_actions",
-        thread_state : "existing_thread",
-        call_to_actions:[
-            {
-              type:"postback",
-              title:"Help",
-              payload:"HELP_PAYLOAD"
-            },
-            {
-              type:"web_url",
-              title:"TheMovieDB",
-              url:"https://www.themoviedb.org"
-            }
-          ]
+    json: {
+      setting_type: "call_to_actions",
+      thread_state: "existing_thread",
+      call_to_actions: [
+        {
+          type: "postback",
+          title: "Help",
+          payload: "HELP_PAYLOAD"
+        },
+        {
+          type: "web_url",
+          title: "TheMovieDB",
+          url: "https://www.themoviedb.org"
+        }
+      ]
     }
   }, function(error, response, body) {
     console.log(response)
