@@ -69,10 +69,13 @@ app.post('/webhook/', function (req, res) {
     let sender = event.sender.id
     // Handle postbacks (for example, CTAs from persistent menu)
     if (event.postback) {
+      // Show help
       if (event.postback.payload == "HELP_PAYLOAD") {
         sendTextMessage(sender, help_msg, null)
+      // Show about info
       } else if (event.postback.payload == "ABOUT_PAYLOAD") {
         sendTextMessage(sender, about_msg, null)
+      // Show 10 most popular TV shows
       } else if (event.postback.payload === "POPULAR_TV_PAYLOAD") {
         mdb.miscPopularTvs((err, res) => {
           if (!err) {
@@ -83,6 +86,18 @@ app.post('/webhook/', function (req, res) {
             sendTextMessage(sender, popular_shows, null)
           }
         })
+      // Show 10 most popular movies
+      } else if (event.postback.payload === "POPULAR_MOVIES_PAYLOAD") {
+        mdb.miscPopularMovies((err, res) => {
+          if (!err) {
+            let popular_movies = ""
+            for (var i=0; i<10; i++) {
+              popular_movies += res.results[i].title + "\n"
+            }
+            sendTextMessage(sender, popular_movies, null)
+          }
+        })
+      // Show 5 upcoming movies
       } else if (event.postback.payload === "UPCOMING_MOVIES_PAYLOAD") {
         mdb.miscUpcomingMovies((err, res) => {
           if (!err) {
