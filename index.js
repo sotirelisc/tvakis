@@ -36,6 +36,7 @@ app.get('/webhook/', function (req, res) {
 // Define emojis
 const emojis = {
   not_found: '🙄',
+  hug: '🤗',
   sick: '🤢',
   heart: '❤️',
   sun: '😎',
@@ -51,7 +52,7 @@ const emojis = {
 }
 
 // Destructuring emojis
-const { title_emj, plot_emj, aired_emj, sun, not_found, popcorn, film, link, heart, view_emj, new_emj, top } = emojis;
+const { title_emj, plot_emj, aired_emj, hug, not_found, popcorn, film, link, heart, view_emj, new_emj, top } = emojis;
   
 const help_msg = heart + " Hey there, I'm TVakis!"
                   + "\n" + title_emj + " You can give me the name of a TV show and I'll give you info about it. Like when the last episode was and when the new one is gonna be!"
@@ -124,7 +125,7 @@ app.post('/webhook/', function (req, res) {
         // Filter text
         text = text.toLowerCase()
         if (text == "hi" || text == "hey" || text == "hello") {
-          sendTextMessage(sender, "Hello! Please give me a TV show or a movie!" + sun, null)
+          sendTextMessage(sender, "Hello! Please give me a TV show or a movie (add the word 'movie' before title)!" + hug, null)
         // Help command
         } else if (text == "/help") {
           sendTextMessage(sender, help_msg, null)
