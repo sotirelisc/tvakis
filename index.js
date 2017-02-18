@@ -67,15 +67,26 @@ app.post('/webhook/', function (req, res) {
     let event = req.body.entry[0].messaging[i]
     // Get sender (user) info
     let sender = event.sender.id
-    // Handle postbacks (for example, from persistent menu)
+    // Handle postbacks (for example, CTAs from persistent menu)
     if (event.postback) {
       if (event.postback.payload == "HELP_PAYLOAD") {
         sendTextMessage(sender, help_msg, null)
       } else if (event.postback.payload == "ABOUT_PAYLOAD") {
         sendTextMessage(sender, about_msg, null)
+      } else if (event.postback.payload === "POPULAR_TV_PAYLOAD") {
+        mdb.miscPopularTvs((err, res) => {
+          if (!err) {
+            let popular_shows = ""
+            for (var i=0; i<10; i++) {
+              popular_shows += res.results[i].name + "\n"
+            }
+            sendTextMessage(sender, popular_shows, null)
+          }
+        })
       }
       continue
     }
+    // Handle regular messages
     if (event.message && event.message.text) {
       // Parse actual text
       let text = event.message.text
