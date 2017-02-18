@@ -292,6 +292,11 @@ function persistentMenu() {
         },
         {
           type: "postback",
+          title: "Popular Movies",
+          payload: "POPULAR_MOVIES_PAYLOAD"
+        },
+        {
+          type: "postback",
           title: "Upcoming Movies",
           payload: "UPCOMING_MOVIES_PAYLOAD"
         },
