@@ -266,6 +266,16 @@ function persistentMenu() {
       call_to_actions: [
         {
           type: "postback",
+          title: "Popular TV Shows",
+          payload: "POPULAR_TV_PAYLOAD"
+        },
+        {
+          type: "postback",
+          title: "Upcoming Movies",
+          payload: "UPCOMING_MOVIES_PAYLOAD"
+        },
+        {
+          type: "postback",
           title: "Help",
           payload: "HELP_PAYLOAD"
         },
