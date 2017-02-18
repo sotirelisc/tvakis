@@ -83,6 +83,16 @@ app.post('/webhook/', function (req, res) {
             sendTextMessage(sender, popular_shows, null)
           }
         })
+      } else if (event.postback.payload === "UPCOMING_MOVIES_PAYLOAD") {
+        mdb.miscUpcomingMovies((err, res) => {
+          if (!err) {
+            let upcoming_movies = ""
+            for (var i=0; i<5; i++) {
+              upcoming_movies += res.results[i].title + "\n"
+            }
+            sendTextMessage(sender, upcoming_movies, null)
+          }
+        })
       }
       continue
     }
