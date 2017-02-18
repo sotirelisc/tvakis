@@ -305,11 +305,11 @@ function persistentMenu() {
           title: "Popular TV Shows",
           payload: "POPULAR_TV_PAYLOAD"
         },
-        {
-          type: "postback",
-          title: "Popular Movies",
-          payload: "POPULAR_MOVIES_PAYLOAD"
-        },
+        // {
+        //   type: "postback",
+        //   title: "Popular Movies",
+        //   payload: "POPULAR_MOVIES_PAYLOAD"
+        // },
         {
           type: "postback",
           title: "Upcoming Movies",
