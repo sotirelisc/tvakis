@@ -45,11 +45,13 @@ const emojis = {
   aired_emj: '✈️ ',
   popcorn: '🍿',
   link: '🔗',
+  top: '🔝',
+  new_emj: '🆕',
   film: '🎞️'
 }
 
 // Destructuring emojis
-const { title_emj, plot_emj, aired_emj, sun, not_found, popcorn, film, link, heart, view_emj } = emojis;
+const { title_emj, plot_emj, aired_emj, sun, not_found, popcorn, film, link, heart, view_emj, new_emj, top } = emojis;
   
 const help_msg = heart + " Hey there, I'm TVakis!"
                   + "\n" + title_emj + " You can give me the name of a TV show and I'll give you info about it. Like when the last episode was and when the new one is gonna be!"
@@ -79,7 +81,7 @@ app.post('/webhook/', function (req, res) {
       } else if (event.postback.payload === "POPULAR_TV_PAYLOAD") {
         mdb.miscPopularTvs((err, res) => {
           if (!err) {
-            let popular_shows = ""
+            let popular_shows = top + top + top + "\n"
             for (var i=0; i<10; i++) {
               popular_shows += res.results[i].name + "\n"
             }
@@ -101,7 +103,7 @@ app.post('/webhook/', function (req, res) {
       } else if (event.postback.payload === "UPCOMING_MOVIES_PAYLOAD") {
         mdb.miscUpcomingMovies((err, res) => {
           if (!err) {
-            let upcoming_movies = ""
+            let upcoming_movies = new_emj + new_emj + new_emj + "\n"
             for (var i=0; i<5; i++) {
               upcoming_movies += res.results[i].title + "\n"
             }
