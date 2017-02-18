@@ -48,18 +48,19 @@ const emojis = {
   film: '🎞️'
 }
 
-app.post('/webhook/', function (req, res) {
-  // Destructuring emojis
-  const { title_emj, plot_emj, aired_emj, sun, not_found, popcorn, film, link, heart, view_emj } = emojis;
+// Destructuring emojis
+const { title_emj, plot_emj, aired_emj, sun, not_found, popcorn, film, link, heart, view_emj } = emojis;
   
-  const help_msg = heart + " Hey there, I'm TVakis!"
+const help_msg = heart + " Hey there, I'm TVakis!"
                   + "\n" + title_emj + " You can give me the name of a TV show and I'll give you info about it. Like when the last episode was and when the new one is gonna be!"
                   + "\n" + popcorn + " I can also tell you about a movie if you add the word 'Movie' before its title!"
                   + "\n\n" + view_emj + " For example, type: movie interstellar"
                   + "\n" + plot_emj + " Or just: game of thrones"
                   
-  const about_msg = "I am 1.1 versions old and was made by Christos Sotirelis in Greece! Send questions or feedback at: sotirelisc@gmail.com"
-  
+const about_msg = "I am 1.1 versions old and was made by Christos Sotirelis in Greece! Send questions or feedback at: sotirelisc@gmail.com"
+
+// This is where all magic happens
+app.post('/webhook/', function (req, res) {
   let messaging_events = req.body.entry[0].messaging
   // Loop through messaging events
   for (let i = 0; i < messaging_events.length; i++) {
@@ -157,9 +158,9 @@ app.post('/webhook/', function (req, res) {
                     let next_episode_air = new Date(next_episode.air_date)
                     let today = new Date()
                     if (next_episode_air == today) {
-                      last_str = last_str + "\n" + popcorn + "New episode airs today!"
+                      last_str = last_str + "\n" + popcorn + " New episode airs today!"
                     } else {
-                      last_str = last_str + "\n" + popcorn + "New episode airs in " + getDaysDifference(today, next_episode_air) + " day(s) ("+ next_episode_air.toDateString() + ")!"
+                      last_str = last_str + "\n" + popcorn + " New episode airs in " + getDaysDifference(today, next_episode_air) + " day(s) ("+ next_episode_air.toDateString() + ")!"
                     }
                     last_str = last_str + "\n" + view_emj + " " + next_episode.overview
                   }
