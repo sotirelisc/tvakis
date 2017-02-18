@@ -137,7 +137,7 @@ app.post('/webhook/', function (req, res) {
                 return
               }
               if (res.results.length === 0) {
-                sendTextMessage(sender, "The TV show or movie was not found!" + not_found, null)
+                sendTextMessage(sender, "The movie was not found!" + not_found, null)
                 return
               }
               sendTextMessage(sender, title_emj + " " + res.results[0].title + " (" + res.results[0].vote_average + " average)\n" + plot_emj + " " + res.results[0].overview.substring(0, 550) + "..", null)
@@ -152,7 +152,7 @@ app.post('/webhook/', function (req, res) {
                 return
               }
               if (res.results.length === 0) {
-                sendTextMessage(sender, "The TV show or movie was not found!" + not_found, null)
+                sendTextMessage(sender, "The TV show was not found! If you're searching for a movie, add 'movie' before its title!" + not_found, null)
                 return
               }
               console.log(res.results[0].name)
