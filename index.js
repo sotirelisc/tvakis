@@ -185,6 +185,12 @@ app.post('/webhook/', function (req, res) {
                     console.log(err)
                     return
                   }
+                  // If the last season has only 1 episode and later than today, then show upcoming season date
+                  let temp_date = new Date(res.episodes[0].air_date)
+                  if (res.episodes.length == 1 && temp_date > new Date()) {
+                    sendTextMessage(sender, popcorn + " New season airs on " + temp_date + "!", null)
+                    return
+                  }
                   // Get show's last episode (if exists)
                   let last_episode = getCorrectLastEpisode(res)
                   let air_date = new Date(last_episode[0].air_date)
