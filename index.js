@@ -135,7 +135,7 @@ const searchMovie = (chat, title) => {
             "buttons": [{
               "type": "web_url",
               "url": "https://www.themoviedb.org/movie/" + res.results[0].id,
-              "title": "Learn More",
+              "title": emoji.link + " Learn More",
               "webview_height_ratio": "tall"
             }]
           })
@@ -158,11 +158,11 @@ const searchTv = (chat, title) => {
             console.log(err)
           } else {
             let show = []
-            let first_aired = new Date(res.results.first_air_date)
+            let first_aired = new Date(res.first_air_date)
             show.push({
-              "title": res.results.name + " (" + release_date + " - " + res.results.vote_average + "/10)",
+              "title": res.name + " (" + release_date + " - " + res.vote_average + "/10)",
               "subtitle": "First aired: " + first_aired.getFullYear(),
-              "image_url": poster_url + res.results.poster_path
+              "image_url": poster_url + res.poster_path
             })
 
             // Split the overview in 2 messages if more than 550 chars (Facebook allows 640 chars message max)

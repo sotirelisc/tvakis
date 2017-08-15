@@ -1,4 +1,6 @@
 module.exports = {
+  waving: '👋',
+  down: '👇',
   not_found: '🙄',
   hug: '🤗',
   sick: '🤢',
