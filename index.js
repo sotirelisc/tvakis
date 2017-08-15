@@ -172,15 +172,6 @@ const searchTv = (chat, title) => {
               "image_url": poster_url + res.poster_path
             })
             chat.sendGenericTemplate(show).then(() => {
-              // Split the overview in 2 messages if more than 550 chars (Facebook allows 640 chars message max)
-              if (res.overview.length > 550) {
-                chat.say(emoji.camera + res.overview.substring(0, 550) + "..").then(() => {
-                  chat.say(".." + res.overview.substring(550, 1000))
-                })
-              } else {
-                chat.say(emoji.camera + res.overview)
-              }
-
               // Find correct last season
               let last_season = res.number_of_seasons
               let last_season_date = new Date(res.seasons[last_season - 1].air_date)
@@ -221,7 +212,20 @@ const searchTv = (chat, title) => {
                         last_str = last_str + "\n" + emoji.view_emj + next_episode.overview
                       }
                     }
-                    chat.say(emoji.aired_emj + last_str)
+                    // Split the overview in 2 messages if more than 550 chars (Facebook allows 640 chars message max)
+                    if (res.overview.length > 550) {
+                      chat.say(emoji.camera + res.overview.substring(0, 550) + "..").then(() => {
+                        chat.say(".." + res.overview.substring(550, 1000)).then(() => {
+                          chat.sendTypingIndicator(1500).then(() => {
+                            chat.say(emoji.aired_emj + last_str)
+                          })
+                        })
+                      })
+                    } else {
+                      chat.say(emoji.camera + res.overview).then(() => {
+                        chat.say(emoji.aired_emj + last_str)
+                      })
+                    }
                   }
                 }
               })
