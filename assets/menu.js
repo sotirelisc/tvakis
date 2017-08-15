@@ -19,6 +19,10 @@ module.exports = (bot) => {
       type: 'postback',
       title: emoji.new_emj + ' Upcoming',
       payload: 'UPCOMING_MOVIES_PAYLOAD'
+    }, {
+      type: 'postback',
+      title: emoji.top + ' Popular',
+      payload: 'POPULAR_MOVIES_PAYLOAD'
     }]
   }, {
     title: emoji.heart + ' More',

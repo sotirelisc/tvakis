@@ -18,19 +18,82 @@ const mdb = require('moviedb')(process.env.TMDBKEY)
 const menuAssets = require('./assets/menu')
 bot.module(menuAssets)
 bot.setGetStartedButton((payload, chat) => {
-  chat.sendTypingIndicator(500).then(() => getIntro(chat))
+  chat.sendTypingIndicator(500).then(() => showIntro(chat))
 })
 
 // Load emojis
 let emoji = require('./assets/emoji')
 
-const help_msg = heart + " Hey there, I'm TVakis!"
-                  + "\n" + title_emj + " You can give me the name of a TV show and I'll give you info about it. Like when the last episode was and when the new one is gonna be!"
-                  + "\n" + popcorn + " I can also tell you about a movie if you add the word 'Movie' before its title!"
-                  + "\n\n" + view_emj + " For example, type: movie interstellar"
-                  + "\n" + plot_emj + " Or just: game of thrones"
+const poster_url = "https://image.tmdb.org/t/p/w640"
 
-const about_msg = "I am 1.1 versions old and was made by Christos Sotirelis in Greece! Send questions or feedback at: sotirelisc@gmail.com"
+const showIntro = (chat) => {
+  chat.getUserProfile().then((user) => {
+    chat.say("Hi, " + user.first_name + "!" + emoji.waving + "\n\n" +
+      "I'm TVakis, your movies & TV shows assistant!\nGive me a TV show or a movie (add the word 'movie' before title, for movies)!")
+  })
+}
+
+const showAbout = (chat) => {
+  chat.say(emoji.heart + "I am 1.1 versions old and was made by Christos Sotirelis in Greece! Send questions or feedback at: sotirelisc@gmail.com")
+}
+
+const showHelp = (chat) => {
+  const help_msg = emoji.heart + " Hey there, I'm TVakis!"
+                    + "\n" + emoji.tv + " You can give me the name of a TV show and I'll give you info about it. Like when the last episode was and when the new one is gonna be!"
+                    + "\n" + emoji.popcorn + " I can also tell you about a movie if you add the word 'Movie' before its title!"
+                    + "\n\n" + emoji.view_emj + " For example, type: movie interstellar"
+                    + "\n" + emoji.camera + " Or just: game of thrones"
+  chat.say(help_msg)
+}
+
+const showPopularTV = (chat) => {
+  mdb.miscPopularTvs((err, res) => {
+    if (!err) {
+      let shows = []
+      for (let i=0; i<10; i++) {
+        shows.push({
+          "title": res.results[i].name + " (" + res.results[i].vote_average + "/10)",
+          "subtitle": res.results[i].overview,
+          "image_url": poster_url + res.results[i].poster_path
+        })
+      }
+      chat.sendGenericTemplate(shows)
+    }
+  })
+}
+
+const showUpcomingMovies = (chat) => {
+  mdb.miscUpcomingMovies((err, res) => {
+    if (!err) {
+      let movies = []
+      for (let i=0; i<10; i++) {
+        movies.push({
+          "title": res.results[i].title + " (" + res.results[i].vote_average + "/10)",
+          "subtitle": res.results[i].overview,
+          "image_url": poster_url + res.results[i].poster_path
+        })
+      }
+      chat.sendGenericTemplate(movies)
+    }
+  })
+}
+
+const showPopularMovies = (chat) => {
+  mdb.miscPopularMovies((err, res) => {
+    if (!err) {
+      let movies = []
+      for (let i=0; i<10; i++) {
+        movies.push({
+          "title": res.results[i].title + " (" + res.results[i].vote_average + "/10)",
+          "subtitle": res.results[i].overview,
+          "image_url": poster_url + res.results[i].poster_path
+        })
+      }
+      chat.sendGenericTemplate(movies)
+    }
+  })
+}
+
 
 // This is where all magic happens
 app.post('/webhook/', function (req, res) {
@@ -220,110 +283,24 @@ function getCorrectLastEpisode(res) {
   return [episode, i+1]
 }
 
-const token = process.env.FB_PAGE_ACCESS_TOKEN
-
-// Handles messaging from server to bot
-function sendTextMessage(sender, text, next) {
-  let messageData = { text: text }
-  request({
-    url: 'https://graph.facebook.com/v2.6/me/messages',
-    qs: { access_token: token },
-    method: 'POST',
-    json: {
-      recipient: { id: sender },
-      message: messageData,
-    }
-  }, function(error, response, body) {
-    if (error) {
-      console.log('Error sending messages: ', error)
-    } else if (response.body.error) {
-      console.log('Error: ', response.body.error)
-    } else {
-      if (next == null) return
-      return next()
-    }
-  })
-}
-
-function createGreetingMsgConnector(data) {
-  request({
-    uri: 'https://graph.facebook.com/v2.6/me/thread_settings',
-    qs: { access_token: token },
-    method: 'POST',
-    json: data
-  }, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      console.log("Greeting message set successfully!")
-    } else {
-      console.error("Failed to set greeting message!")
-    }
-  });
-}
-
-function setGreetingMsg() {
-  var greetingMsgData = {
-    setting_type: "greeting",
-    greeting: {
-      text: "Hi {{user_first_name}}, I'm TVakis! Give me the name of a TV show or add 'movie' before a movie title and I'll search it for you! For help, type /help"
-    }
-  };
-  createGreetingMsgConnector(greetingMsgData)
-}
-
-function persistentMenu() {
-  request({
-    url: 'https://graph.facebook.com/v2.6/me/thread_settings',
-    qs: { access_token: token },
-    method: 'POST',
-    json: {
-      setting_type: "call_to_actions",
-      thread_state: "existing_thread",
-      call_to_actions: [
-        {
-          type: "postback",
-          title: "Popular TV Shows",
-          payload: "POPULAR_TV_PAYLOAD"
-        },
-        // {
-        //   type: "postback",
-        //   title: "Popular Movies",
-        //   payload: "POPULAR_MOVIES_PAYLOAD"
-        // },
-        {
-          type: "postback",
-          title: "Upcoming Movies",
-          payload: "UPCOMING_MOVIES_PAYLOAD"
-        },
-        {
-          type: "postback",
-          title: "Help",
-          payload: "HELP_PAYLOAD"
-        },
-        {
-          type: "postback",
-          title: "About Me",
-          payload: "ABOUT_PAYLOAD"
-        },
-        {
-          type: "web_url",
-          title: "Powered by TheMovieDB",
-          url: "https://www.themoviedb.org"
-        }
-      ]
-    }
-  }, function(error, response, body) {
-    console.log(response)
-    if (error) {
-      console.log('Error sending messages: ', error)
-    } else if (response.body.error) {
-      console.log('Error: ', response.body.error)
-    }
-  })
-}
-
-// Run server
-app.listen(app.get('port'), function() {
-  console.log('Running on port: ', app.get('port'))
-  setGreetingMsg()
-  persistentMenu()
+bot.on('postback:POPULAR_TV_PAYLOAD', (payload, chat) => {
+  showPopularTV(chat)
 })
+
+bot.on('postback:UPCOMING_MOVIES_PAYLOAD', (payload, chat) => {
+  showUpcomingMovies(chat)
+})
+
+bot.on('postback:POPULAR_MOVIES_PAYLOAD', (payload, chat) => {
+  showPopularMovies(chat)
+})
+
+bot.on('postback:HELP_PAYLOAD', (payload, chat) => {
+  showHelp(chat)
+})
+
+bot.on('postback:ABOUT_PAYLOAD', (payload, chat) => {
+  showAbout(chat)
+})
+
+bot.start(process.env.PORT)
