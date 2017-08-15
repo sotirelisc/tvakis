@@ -51,15 +51,15 @@ const showIntro = (chat) => {
 }
 
 const showAbout = (chat) => {
-  chat.say(emoji.heart + "I am 1.1 versions old and was made by Christos Sotirelis in Greece! Send questions or feedback at: sotirelisc@gmail.com")
+  chat.say(emoji.heart + "I was born at January 2017 and now I'm 2.0 versions old! I was made by Christos Sotirelis in Greece, with the help of TheMovieDB! Send questions or feedback at: sotirelisc@gmail.com")
 }
 
 const showHelp = (chat) => {
-  const help_msg = emoji.heart + " Hey there, I'm TVakis!" +
-    "\n" + emoji.tv + " You can give me the name of a TV show and I'll give you info about it. Like when the last episode was and when the new one is gonna be!" +
-    "\n" + emoji.popcorn + " I can also tell you about a movie if you add the word 'Movie' before its title!" +
-    "\n\n" + emoji.view_emj + " For example, type: movie interstellar" +
-    "\n" + emoji.camera + " Or just: game of thrones"
+  const help_msg = emoji.heart + "Hey there, I'm TVakis!" +
+    "\n" + emoji.tv + "You can give me the name of a TV show and I'll give you info about it. Like when the last episode was and when the new one is gonna be!" +
+    "\n" + emoji.popcorn + "I can also tell you about a movie if you add the word 'Movie' before its title!" +
+    "\n\n" + emoji.view_emj + "For example, type: movie interstellar" +
+    "\n" + emoji.camera + "Or just: game of thrones"
   chat.say(help_msg)
 }
 
@@ -67,14 +67,21 @@ const showPopularTV = (chat) => {
   mdb.miscPopularTvs((err, res) => {
     if (!err) {
       let shows = []
+      let shows_quickReplies = []
       for (let i = 0; i < 10; i++) {
         shows.push({
           "title": res.results[i].name + " (" + res.results[i].vote_average.toFixed(1) + "/10)",
           "subtitle": res.results[i].overview,
           "image_url": poster_url + res.results[i].poster_path
         })
+        shows_quickReplies.push(res.results[i].name)
       }
-      chat.sendGenericTemplate(shows)
+      chat.sendGenericTemplate(shows).then(() => {
+        chat.say({
+          text: "Cool! Search those shows easily!",
+          quickReplies: shows_quickReplies
+        })
+      })
     }
   })
 }
@@ -142,7 +149,9 @@ const searchMovie = (chat, title) => {
             }]
           })
         }
-        chat.sendGenericTemplate(movies)
+        chat.say("There are the relevant movies I found!").then(() => {
+          chat.sendGenericTemplate(movies)
+        })
       }
     }
   })
@@ -172,6 +181,7 @@ const searchTv = (chat, title) => {
               "image_url": poster_url + res.poster_path
             })
             chat.sendGenericTemplate(show).then(() => {
+              let show_overview = res.overview
               // Find correct last season
               let last_season = res.number_of_seasons
               let last_season_date = new Date(res.seasons[last_season - 1].air_date)
@@ -213,16 +223,16 @@ const searchTv = (chat, title) => {
                       }
                     }
                     // Split the overview in 2 messages if more than 550 chars (Facebook allows 640 chars message max)
-                    if (res.overview.length > 550) {
-                      chat.say(emoji.camera + res.overview.substring(0, 550) + "..").then(() => {
-                        chat.say(".." + res.overview.substring(550, 1000)).then(() => {
+                    if (show_overview.length > 550) {
+                      chat.say(emoji.camera + show_overview.substring(0, 550) + "..").then(() => {
+                        chat.say(".." + show_overview.substring(550, 1000)).then(() => {
                           chat.sendTypingIndicator(1500).then(() => {
                             chat.say(emoji.aired_emj + last_str)
                           })
                         })
                       })
                     } else {
-                      chat.say(emoji.camera + res.overview).then(() => {
+                      chat.say(emoji.camera + show_overview).then(() => {
                         chat.say(emoji.aired_emj + last_str)
                       })
                     }
