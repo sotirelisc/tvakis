@@ -94,6 +94,90 @@ const showPopularMovies = (chat) => {
   })
 }
 
+const searchMovie = (chat, title) => {
+  mdb.searchMovie({ query: title }, (err, res) => {
+    if (err) {
+      console.log(err)
+    } else {
+      if (res.results.length === 0) {
+        chat.say("The movie was not found!" + emoji.not_found)
+      } else {
+        let movies_to_get = res.results.length
+        // Show 5 (or less) relevant movies
+        if (movies_to_get > 5) {
+          movies_to_get = 5
+        }
+
+        let movies = []
+        for (let i=0; i<movies_to_get; i++) {
+          let release_date = new Date(res.results[i].release_date)
+          movies.push({
+            "title": res.results[i].title + " (" + release_date + " - " + res.results[i].vote_average + "/10)",
+            "subtitle": res.results[i].overview,
+            "image_url": poster_url + res.results[i].poster_path,
+            "buttons": [{
+              "type": "web_url",
+              "url": "https://www.themoviedb.org/movie/" + res.results[0].id,
+              "title": "Learn More",
+              "webview_height_ratio": "tall"
+            }]
+          })
+        }
+      }
+    }
+  })
+}
+
+const searchTv = (chat, title) => {
+  mdb.searchMovie({ query: title }, (err, res) => {
+    if (err) {
+      console.log(err)
+    } else {
+      if (res.results.length === 0) {
+        chat.say("The movie was not found!" + emoji.not_found)
+      } else {
+        let movies_to_get = res.results.length
+        // Show 5 (or less) relevant movies
+        if (movies_to_get > 5) {
+          movies_to_get = 5
+        }
+
+        let movies = []
+        for (let i=0; i<movies_to_get; i++) {
+          let release_date = new Date(res.results[i].release_date)
+          movies.push({
+            "title": res.results[i].title + " (" + release_date + " - " + res.results[i].vote_average + "/10)",
+            "subtitle": res.results[i].overview,
+            "image_url": poster_url + res.results[i].poster_path,
+            "buttons": [{
+              "type": "web_url",
+              "url": "https://www.themoviedb.org/movie/" + res.results[0].id,
+              "title": "Learn More",
+              "webview_height_ratio": "tall"
+            }]
+          })
+        }
+      }
+    }
+  })
+}
+
+bot.on('message', (payload, chat) => {
+  const fid = payload.sender.id
+  console.log(fid)
+  const text = payload.message.text.toLowerCase()
+
+  if (text == "hi" || text == "hey" || text == "hello") {
+    chat.sendTypingIndicator(500).then(() => showIntro(chat))
+  } else {
+    if (text.startsWith("movie ")) {
+      let title = getTitleFromText(text)
+      searchMovie(chat, title)
+    } else {
+      searchTv(chat, text)
+    }
+  }
+})
 
 // This is where all magic happens
 app.post('/webhook/', function (req, res) {
@@ -103,50 +187,6 @@ app.post('/webhook/', function (req, res) {
     let event = req.body.entry[0].messaging[i]
     // Get sender (user) info
     let sender = event.sender.id
-    // Handle postbacks (for example, CTAs from persistent menu)
-    if (event.postback) {
-      // Show help
-      if (event.postback.payload == "HELP_PAYLOAD") {
-        sendTextMessage(sender, help_msg, null)
-      // Show about info
-      } else if (event.postback.payload == "ABOUT_PAYLOAD") {
-        sendTextMessage(sender, about_msg, null)
-      // Show 10 most popular TV shows
-      } else if (event.postback.payload === "POPULAR_TV_PAYLOAD") {
-        mdb.miscPopularTvs((err, res) => {
-          if (!err) {
-            let popular_shows = top + top + top + "\n"
-            for (var i=0; i<10; i++) {
-              popular_shows += res.results[i].name + "\n"
-            }
-            sendTextMessage(sender, popular_shows, null)
-          }
-        })
-      // Show 10 most popular movies
-      } else if (event.postback.payload === "POPULAR_MOVIES_PAYLOAD") {
-        mdb.miscPopularMovies((err, res) => {
-          if (!err) {
-            let popular_movies = ""
-            for (var i=0; i<10; i++) {
-              popular_movies += res.results[i].title + "\n"
-            }
-            sendTextMessage(sender, popular_movies, null)
-          }
-        })
-      // Show 5 upcoming movies
-      } else if (event.postback.payload === "UPCOMING_MOVIES_PAYLOAD") {
-        mdb.miscUpcomingMovies((err, res) => {
-          if (!err) {
-            let upcoming_movies = new_emj + new_emj + new_emj + "\n"
-            for (var i=0; i<5; i++) {
-              upcoming_movies += res.results[i].title + "\n"
-            }
-            sendTextMessage(sender, upcoming_movies, null)
-          }
-        })
-      }
-      continue
-    }
     // Handle regular messages
     if (event.message && event.message.text) {
       // Parse actual text
