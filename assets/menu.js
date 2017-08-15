@@ -29,11 +29,11 @@ module.exports = (bot) => {
     type: 'nested',
     call_to_actions: [{
       type: 'postback',
-      title: emoji.profile + ' About Me',
+      title: emoji.bot + ' About Me',
       payload: 'HELP_PAYLOAD'
     }, {
       type: 'postback',
-      title: emoji.score + ' Help',
+      title: emoji.sos + ' Help',
       payload: 'ABOUT_PAYLOAD'
     }]
   }], false)

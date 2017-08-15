@@ -69,7 +69,7 @@ const showPopularTV = (chat) => {
       let shows = []
       for (let i=0; i<10; i++) {
         shows.push({
-          "title": res.results[i].name + " (" + res.results[i].vote_average + "/10)",
+          "title": res.results[i].name + " (" + res.results[i].vote_average.toFixed(1) + "/10)",
           "subtitle": res.results[i].overview,
           "image_url": poster_url + res.results[i].poster_path
         })
@@ -85,7 +85,7 @@ const showUpcomingMovies = (chat) => {
       let movies = []
       for (let i=0; i<10; i++) {
         movies.push({
-          "title": res.results[i].title + " (" + res.results[i].vote_average + "/10)",
+          "title": res.results[i].title + " (" + res.results[i].vote_average.toFixed(1) + "/10)",
           "subtitle": res.results[i].overview,
           "image_url": poster_url + res.results[i].poster_path
         })
@@ -101,7 +101,7 @@ const showPopularMovies = (chat) => {
       let movies = []
       for (let i=0; i<10; i++) {
         movies.push({
-          "title": res.results[i].title + " (" + res.results[i].vote_average + "/10)",
+          "title": res.results[i].title + " (" + res.results[i].vote_average.toFixed(1) + "/10)",
           "subtitle": res.results[i].overview,
           "image_url": poster_url + res.results[i].poster_path
         })
@@ -129,7 +129,7 @@ const searchMovie = (chat, title) => {
         for (let i=0; i<movies_to_get; i++) {
           let release_date = new Date(res.results[i].release_date)
           movies.push({
-            "title": res.results[i].title + " (" + release_date.getFullYear() + " - " + res.results[i].vote_average + "/10)",
+            "title": res.results[i].title + " (" + release_date.getFullYear() + " - " + res.results[i].vote_average.toFixed(1) + "/10)",
             "subtitle": res.results[i].overview,
             "image_url": poster_url + res.results[i].poster_path,
             "buttons": [{
@@ -160,7 +160,7 @@ const searchTv = (chat, title) => {
             let show = []
             let first_aired = new Date(res.first_air_date)
             show.push({
-              "title": res.name + " (" + release_date + " - " + res.vote_average + "/10)",
+              "title": res.name + " (" + res.vote_average.toFixed(1) + "/10)",
               "subtitle": "First aired: " + first_aired.getFullYear(),
               "image_url": poster_url + res.poster_path
             })

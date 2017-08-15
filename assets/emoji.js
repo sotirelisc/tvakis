@@ -1,4 +1,6 @@
 module.exports = {
+  sos: '🆘',
+  bot: '🤖',
   waving: '👋',
   down: '👇',
   not_found: '🙄',
