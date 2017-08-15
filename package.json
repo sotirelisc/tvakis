@@ -9,11 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.15.2",
-    "express": "^4.14.0",
-    "imdb-api": "^2.2.0",
-    "moviedb": "^0.2.7",
-    "omdbapi": "^1.1.0",
-    "request": "^2.79.0"
+    "bootbot": "^1.0.12",
+    "express": "^4.15.4",
+    "moviedb": "^0.2.7"
   }
 }

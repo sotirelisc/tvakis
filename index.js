@@ -1,65 +1,35 @@
 'use strict'
 
-const express = require('express')
-const bodyParser = require('body-parser')
-const request = require('request')
-const app = express()
+const BootBot = require('bootbot')
 
-const mdb = require('moviedb')(process.env.TMDBKEY);
-
-app.set('port', (process.env.PORT || 5000))
-
-// Process application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-
-// Process application/json
-app.use(bodyParser.json())
-
-// Index route
-app.get('/', function (req, res) {
-  res.send('Hello, botworld!')
-})
-
-// Privacy policy page
-app.get('/privacy/', function (req, res) {
-  res.sendFile('privacy.html', { root : __dirname});
-})
-
-// Facebook verification
-app.get('/webhook/', function (req, res) {
-  if (req.query['hub.verify_token'] === 'tvakis_verification') {
-    res.send(req.query['hub.challenge'])
-  }
-  res.send('Error, wrong token')
-})
-
-// Define emojis
-const emojis = {
-  not_found: '🙄',
-  hug: '🤗',
-  sick: '🤢',
-  heart: '❤️',
-  sun: '😎',
-  title_emj: '📺',
-  plot_emj: '🎥',
-  view_emj: '👉',
-  aired_emj: '✈️ ',
-  popcorn: '🍿',
-  link: '🔗',
-  top: '🔝',
-  new_emj: '🆕',
-  film: '🎞️'
+if (!process.env.FB_ACCESS_TOKEN || !process.env.FB_VERIFY_TOKEN || !process.env.FB_APP_SECRET) {
+  require('./env.js')
 }
 
-// Destructuring emojis
-const { title_emj, plot_emj, aired_emj, hug, not_found, popcorn, film, link, heart, view_emj, new_emj, top } = emojis;
-  
+const bot = new BootBot({
+  accessToken: process.env.FB_ACCESS_TOKEN,
+  verifyToken: process.env.FB_VERIFY_TOKEN,
+  appSecret: process.env.FB_APP_SECRET
+})
+
+const mdb = require('moviedb')(process.env.TMDBKEY)
+
+// Load Persistent Menu, Greeting Text and set GetStarted Button
+const menuAssets = require('./assets/menu')
+bot.module(menuAssets)
+bot.setGetStartedButton((payload, chat) => {
+  chat.sendTypingIndicator(500).then(() => getIntro(chat))
+})
+
+// Load emojis
+let emoji = require('./assets/emoji')
+
 const help_msg = heart + " Hey there, I'm TVakis!"
                   + "\n" + title_emj + " You can give me the name of a TV show and I'll give you info about it. Like when the last episode was and when the new one is gonna be!"
                   + "\n" + popcorn + " I can also tell you about a movie if you add the word 'Movie' before its title!"
                   + "\n\n" + view_emj + " For example, type: movie interstellar"
                   + "\n" + plot_emj + " Or just: game of thrones"
-                  
+
 const about_msg = "I am 1.1 versions old and was made by Christos Sotirelis in Greece! Send questions or feedback at: sotirelisc@gmail.com"
 
 // This is where all magic happens
@@ -238,7 +208,7 @@ function getCorrectLastEpisode(res) {
   let ep_date = new Date(episode.air_date)
 
   var today = new Date()
-  
+
   // We do not want the last episode to be later than today
   // Go to the previous one
   while (ep_date > today) {
