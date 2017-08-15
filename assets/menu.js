@@ -30,11 +30,11 @@ module.exports = (bot) => {
     call_to_actions: [{
       type: 'postback',
       title: emoji.bot + ' About Me',
-      payload: 'HELP_PAYLOAD'
+      payload: 'ABOUT_PAYLOAD'
     }, {
       type: 'postback',
       title: emoji.sos + ' Help',
-      payload: 'ABOUT_PAYLOAD'
+      payload: 'HELP_PAYLOAD'
     }]
   }], false)
 

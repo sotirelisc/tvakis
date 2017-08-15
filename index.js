@@ -51,7 +51,7 @@ const showIntro = (chat) => {
 }
 
 const showAbout = (chat) => {
-  chat.say(emoji.heart + "I was born at January 2017 and now I'm 2.0 versions old! I was made by Christos Sotirelis in Greece, with the help of TheMovieDB! Send questions or feedback at: sotirelisc@gmail.com")
+  chat.say(emoji.heart + "I was born at January 2017 and now I'm 2.0 versions old! I was made by Christos Sotirelis in Greece, with the help of TheMovieDB!\n\nSend questions or feedback at: sotirelisc@gmail.com")
 }
 
 const showHelp = (chat) => {
