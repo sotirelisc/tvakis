@@ -164,6 +164,7 @@ const searchTv = (chat, title) => {
               "subtitle": "First aired: " + first_aired.getFullYear(),
               "image_url": poster_url + res.poster_path
             })
+            chat.sendGenericTemplate(show)
 
             // Split the overview in 2 messages if more than 550 chars (Facebook allows 640 chars message max)
             if (res.overview.length > 550) {
@@ -203,11 +204,11 @@ const searchTv = (chat, title) => {
                     let next_episode_air = new Date(next_episode.air_date)
                     let today = new Date()
                     if (next_episode_air == today) {
-                      last_str = last_str + "\n" + popcorn + " New episode airs today!"
+                      last_str = last_str + "\n" + emoji.popcorn + " New episode airs today!"
                     } else {
-                      last_str = last_str + "\n" + popcorn + " New episode airs in " + getDaysDifference(today, next_episode_air) + " day(s) ("+ next_episode_air.toDateString() + ")!"
+                      last_str = last_str + "\n" + emoji.popcorn + " New episode airs in " + getDaysDifference(today, next_episode_air) + " day(s) ("+ next_episode_air.toDateString() + ")!"
                     }
-                    last_str = last_str + "\n" + view_emj + " " + next_episode.overview
+                    last_str = last_str + "\n" + emoji.view_emj + " " + next_episode.overview
                   }
                   chat.say(emoji.aired_emj + last_str)
                 }
