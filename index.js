@@ -55,11 +55,11 @@ const showAbout = (chat) => {
 }
 
 const showHelp = (chat) => {
-  const help_msg = emoji.heart + " Hey there, I'm TVakis!"
-                    + "\n" + emoji.tv + " You can give me the name of a TV show and I'll give you info about it. Like when the last episode was and when the new one is gonna be!"
-                    + "\n" + emoji.popcorn + " I can also tell you about a movie if you add the word 'Movie' before its title!"
-                    + "\n\n" + emoji.view_emj + " For example, type: movie interstellar"
-                    + "\n" + emoji.camera + " Or just: game of thrones"
+  const help_msg = emoji.heart + " Hey there, I'm TVakis!" +
+    "\n" + emoji.tv + " You can give me the name of a TV show and I'll give you info about it. Like when the last episode was and when the new one is gonna be!" +
+    "\n" + emoji.popcorn + " I can also tell you about a movie if you add the word 'Movie' before its title!" +
+    "\n\n" + emoji.view_emj + " For example, type: movie interstellar" +
+    "\n" + emoji.camera + " Or just: game of thrones"
   chat.say(help_msg)
 }
 
@@ -67,7 +67,7 @@ const showPopularTV = (chat) => {
   mdb.miscPopularTvs((err, res) => {
     if (!err) {
       let shows = []
-      for (let i=0; i<10; i++) {
+      for (let i = 0; i < 10; i++) {
         shows.push({
           "title": res.results[i].name + " (" + res.results[i].vote_average.toFixed(1) + "/10)",
           "subtitle": res.results[i].overview,
@@ -83,7 +83,7 @@ const showUpcomingMovies = (chat) => {
   mdb.miscUpcomingMovies((err, res) => {
     if (!err) {
       let movies = []
-      for (let i=0; i<10; i++) {
+      for (let i = 0; i < 10; i++) {
         movies.push({
           "title": res.results[i].title + " (" + res.results[i].vote_average.toFixed(1) + "/10)",
           "subtitle": res.results[i].overview,
@@ -99,7 +99,7 @@ const showPopularMovies = (chat) => {
   mdb.miscPopularMovies((err, res) => {
     if (!err) {
       let movies = []
-      for (let i=0; i<10; i++) {
+      for (let i = 0; i < 10; i++) {
         movies.push({
           "title": res.results[i].title + " (" + res.results[i].vote_average.toFixed(1) + "/10)",
           "subtitle": res.results[i].overview,
@@ -112,7 +112,9 @@ const showPopularMovies = (chat) => {
 }
 
 const searchMovie = (chat, title) => {
-  mdb.searchMovie({ query: title }, (err, res) => {
+  mdb.searchMovie({
+    query: title
+  }, (err, res) => {
     if (err) {
       console.log(err)
     } else {
@@ -126,7 +128,7 @@ const searchMovie = (chat, title) => {
         }
 
         let movies = []
-        for (let i=0; i<movies_to_get; i++) {
+        for (let i = 0; i < movies_to_get; i++) {
           let release_date = new Date(res.results[i].release_date)
           movies.push({
             "title": res.results[i].title + " (" + release_date.getFullYear() + " - " + res.results[i].vote_average.toFixed(1) + "/10)",
@@ -140,20 +142,25 @@ const searchMovie = (chat, title) => {
             }]
           })
         }
+        chat.sendGenericTemplate(movies)
       }
     }
   })
 }
 
 const searchTv = (chat, title) => {
-  mdb.searchTv({ query: title }, (err, res) => {
+  mdb.searchTv({
+    query: title
+  }, (err, res) => {
     if (err) {
       console.log(err)
     } else {
       if (res.results.length === 0) {
         chat.say("The TV show was not found! If you're searching for a movie, add 'movie' before its title!" + emoji.not_found)
       } else {
-        mdb.tvInfo({ id: res.results[0].id }, (err, res) => {
+        mdb.tvInfo({
+          id: res.results[0].id
+        }, (err, res) => {
           if (err) {
             console.log(err)
           } else {
@@ -164,55 +171,60 @@ const searchTv = (chat, title) => {
               "subtitle": "First aired: " + first_aired.getFullYear(),
               "image_url": poster_url + res.poster_path
             })
-            chat.sendGenericTemplate(show)
-
-            // Split the overview in 2 messages if more than 550 chars (Facebook allows 640 chars message max)
-            if (res.overview.length > 550) {
-              chat.say(emoji.camera + res.overview.substring(0, 550) + "..").then(() => {
-                chat.say(".." + res.overview.substring(550, 1000))
-              })
-            } else {
-              chat.say(emoji.camera + res.overview)
-            }
-
-            // Find correct last season
-            let last_season = res.number_of_seasons
-            let last_season_date = new Date(res.seasons[last_season-1].air_date)
-            let today = new Date()
-            if (last_season_date > today) {
-              last_season--;
-            }
-            // Query last season's episodes
-            mdb.tvSeasonInfo({ id: res.id, season_number: last_season }, (err, res) => {
-              if (err) {
-                console.log(err)
+            chat.sendGenericTemplate(show).then(() => {
+              // Split the overview in 2 messages if more than 550 chars (Facebook allows 640 chars message max)
+              if (res.overview.length > 550) {
+                chat.say(emoji.camera + res.overview.substring(0, 550) + "..").then(() => {
+                  chat.say(".." + res.overview.substring(550, 1000))
+                })
               } else {
-                // If the last season has only 1 episode and later than today, then show upcoming season date
-                let temp_date = new Date(res.episodes[0].air_date)
-                if (res.episodes.length == 1 && temp_date > new Date()) {
-                  chat.say(emoji.popcorn + "New season airs on " + temp_date.toDateString() + "!")
-                } else {
-                  // Get show's last episode (if exists)
-                  let last_episode = getCorrectLastEpisode(res)
-                  let air_date = new Date(last_episode[0].air_date)
-                  let last_str = "Last episode aired was \"" + last_episode[0].name + "\" on " + air_date.toDateString() + "."
-                  // Get show's next episode (if exists)
-                  let next_episode
-                  let episode_number = last_episode[1]
-                  if (episode_number < res.episodes.length) {
-                    next_episode = res.episodes[episode_number+1]
-                    let next_episode_air = new Date(next_episode.air_date)
-                    let today = new Date()
-                    if (next_episode_air == today) {
-                      last_str = last_str + "\n" + emoji.popcorn + " New episode airs today!"
-                    } else {
-                      last_str = last_str + "\n" + emoji.popcorn + " New episode airs in " + getDaysDifference(today, next_episode_air) + " day(s) ("+ next_episode_air.toDateString() + ")!"
-                    }
-                    last_str = last_str + "\n" + emoji.view_emj + " " + next_episode.overview
-                  }
-                  chat.say(emoji.aired_emj + last_str)
-                }
+                chat.say(emoji.camera + res.overview)
               }
+
+              // Find correct last season
+              let last_season = res.number_of_seasons
+              let last_season_date = new Date(res.seasons[last_season - 1].air_date)
+              let today = new Date()
+              if (last_season_date > today) {
+                last_season--;
+              }
+              // Query last season's episodes
+              mdb.tvSeasonInfo({
+                id: res.id,
+                season_number: last_season
+              }, (err, res) => {
+                if (err) {
+                  console.log(err)
+                } else {
+                  // If the last season has only 1 episode and later than today, then show upcoming season date
+                  let temp_date = new Date(res.episodes[0].air_date)
+                  if (res.episodes.length == 1 && temp_date > new Date()) {
+                    chat.say(emoji.popcorn + "New season airs on " + temp_date.toDateString() + "!")
+                  } else {
+                    // Get show's last episode (if exists)
+                    let last_episode = getCorrectLastEpisode(res)
+                    let air_date = new Date(last_episode[0].air_date)
+                    let last_str = "Last episode aired was \"" + last_episode[0].name + "\" on " + air_date.toDateString() + "."
+                    // Get show's next episode (if exists)
+                    let next_episode
+                    let episode_number = last_episode[1]
+                    if (episode_number < res.episodes.length) {
+                      next_episode = res.episodes[episode_number + 1]
+                      let next_episode_air = new Date(next_episode.air_date)
+                      let today = new Date()
+                      if (next_episode_air == today) {
+                        last_str = last_str + "\n" + emoji.popcorn + "New episode airs today!"
+                      } else {
+                        last_str = last_str + "\n" + emoji.popcorn + "New episode airs in " + getDaysDifference(today, next_episode_air) + " day(s) (" + next_episode_air.toDateString() + ")!"
+                      }
+                      if (next_episode.overview) {
+                        last_str = last_str + "\n" + emoji.view_emj + next_episode.overview
+                      }
+                    }
+                    chat.say(emoji.aired_emj + last_str)
+                  }
+                }
+              })
             })
           }
         })
@@ -233,7 +245,7 @@ function getTitleFromText(text) {
 }
 
 function getCorrectLastEpisode(res) {
-  let i = res.episodes.length-1
+  let i = res.episodes.length - 1
   let episode = res.episodes[i]
   let ep_date = new Date(episode.air_date)
 
@@ -247,7 +259,7 @@ function getCorrectLastEpisode(res) {
     i--
   }
   // Also return the position of the last episode
-  return [episode, i+1]
+  return [episode, i + 1]
 }
 
 bot.on('postback:POPULAR_TV_PAYLOAD', (payload, chat) => {
