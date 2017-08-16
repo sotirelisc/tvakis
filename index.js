@@ -138,6 +138,7 @@ const searchMovie = (chat, title) => {
         }
 
         let movies = []
+        let similars = []
         for (let i = 0; i < movies_to_get; i++) {
           let release_date = new Date(res.results[i].release_date)
           movies.push({
@@ -151,9 +152,17 @@ const searchMovie = (chat, title) => {
               "webview_height_ratio": "tall"
             }]
           })
+          similars.push("Similar to " + res.results[i].title)
         }
         chat.say("These are the relevant movies I found!").then(() => {
-          chat.sendGenericTemplate(movies)
+          chat.sendGenericTemplate(movies).then(() => {
+            chat.sendTypingIndicator(1500).then(() => {
+              chat.say({
+                text: "Quickly search for similar movies!",
+                quickReplies: similars
+              })
+            })
+          })
         })
       }
     }
@@ -285,7 +294,7 @@ const searchSimilarMovie = (chat, title) => {
               }]
             })
           }
-          chat.say("These are the relevant movies I found!").then(() => {
+          chat.say("These are the similar movies I found!").then(() => {
             chat.sendGenericTemplate(movies)
           })
         })
