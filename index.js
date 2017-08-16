@@ -37,6 +37,9 @@ bot.on('message', (payload, chat) => {
     if (text.startsWith("movie ")) {
       let title = getTitleFromText(text)
       searchMovie(chat, title)
+    } else if (text.startsWith("similar to ")) {
+      let title = text.substring(11, text.length)
+      searchSimilarMovie(chat, title)
     } else {
       searchTv(chat, text)
     }
@@ -129,9 +132,9 @@ const searchMovie = (chat, title) => {
         chat.say("The movie was not found!" + emoji.not_found)
       } else {
         let movies_to_get = res.results.length
-        // Show 5 (or less) relevant movies
-        if (movies_to_get > 5) {
-          movies_to_get = 5
+        // Show 7 (or less) relevant movies
+        if (movies_to_get > 7) {
+          movies_to_get = 7
         }
 
         let movies = []
@@ -149,7 +152,7 @@ const searchMovie = (chat, title) => {
             }]
           })
         }
-        chat.say("There are the relevant movies I found!").then(() => {
+        chat.say("These are the relevant movies I found!").then(() => {
           chat.sendGenericTemplate(movies)
         })
       }
@@ -241,6 +244,50 @@ const searchTv = (chat, title) => {
               })
             })
           }
+        })
+      }
+    }
+  })
+}
+
+const searchSimilarMovie = (chat, title) => {
+  mdb.searchMovie({
+    query: title
+  }, (err, res) => {
+    if (err) {
+      console.log(err)
+    } else {
+      if (res.results.length === 0) {
+        chat.say("The movie was not found!" + emoji.not_found)
+      } else {
+        let id = res.results[0].id
+        mdb.movieSimilar({
+          id: id
+        }, (err, res) => {
+          let movies_to_get = res.results.length
+          // Show 7 (or less) relevant movies
+          if (movies_to_get > 7) {
+            movies_to_get = 7
+          }
+
+          let movies = []
+          for (let i = 0; i < movies_to_get; i++) {
+            let release_date = new Date(res.results[i].release_date)
+            movies.push({
+              "title": res.results[i].title + " (" + release_date.getFullYear() + " - " + res.results[i].vote_average.toFixed(1) + "/10)",
+              "subtitle": res.results[i].overview,
+              "image_url": poster_url + res.results[i].poster_path,
+              "buttons": [{
+                "type": "web_url",
+                "url": "https://www.themoviedb.org/movie/" + res.results[0].id,
+                "title": emoji.link + " Learn More",
+                "webview_height_ratio": "tall"
+              }]
+            })
+          }
+          chat.say("These are the relevant movies I found!").then(() => {
+            chat.sendGenericTemplate(movies)
+          })
         })
       }
     }
